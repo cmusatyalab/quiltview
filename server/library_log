@@ -1,1 +1,2 @@
 mysql-server mysql-client
+libmysqlclient-dev (otherwise cannot pip install mysql-python)
