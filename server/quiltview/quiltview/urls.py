@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'quiltview.views.home', name='home'),
     # url(r'^quiltview/', include('quiltview.foo.urls')),
+    url(r'^quiltview/$', 'quiltview_query.views.index'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

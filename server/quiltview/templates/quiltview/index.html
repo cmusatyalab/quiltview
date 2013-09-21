@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video segments cookie generator</title>
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}assets/css/bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/css/docs.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <h1>Make your query at QuiltView!</h1> <hr>
+
+    <form action="/quiltview/query" method="get">
+    {% csrf_token %}
+      <div>
+        <div class="row-fluid">
+          <div class="span3">
+            <b>Write your query below: </b>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span6">
+            <input type="text" name="query_content" placeholder="e.g. What is the weather">
+            at      
+            <input type="text" name="query_location" placeholder="Pittsburgh">
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-lg-2">
+            <b>Timeout: </b> 
+            <input type="text" class="form-control" name="time_out_n" placeholder="10">     
+            <select>
+              <option>Minutes</option>
+              <option>Hours</option>
+              <option>Days</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <br>
+      <p>
+        <button class="btn" type="submit">Submit</button>
+      </p>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="{{ STATIC_URL }}assets/js/bootstrap.js"></script>
+  </body>
+</html>
