@@ -9,23 +9,33 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.VideoView;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.common.Scopes;
 import com.google.android.youtube.player.YouTubeIntents;
 
 
 
 public class MainActivity extends Activity {
 
-	private boolean SAVE_VIDEO_TO_SDCARD = false;
+	/*
+	 * Configuration
+	 */
+	private final boolean SAVE_VIDEO_TO_SDCARD = true; //Save to SD card or internal locations
+	private final boolean UPLOAD_WITH_YOUTUBE_INTENT = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,23 +63,19 @@ public class MainActivity extends Activity {
 		//recordVideo
 		dispatchTakeVideoIntent();
 		
-		//Uploade Video to YouTube
-		String YoutubeUri = updateToYouTube();
-		
-		//Send YoutubeUri to server
+
 	}
 	
 	//TODO
 	//return Youtube url
 	//Instructions: https://developers.google.com/youtube/2.0/developers_guide_protocol_resumable_uploads?csw=1#Resumable_uploads
-	private String YOUTUBE_DEVELOPER_KEY = "AI39si7iKjn3EmnLceHn0N8keveSb1JC0gTC2XL665evKHap2nTmULv8Z-2jeVMljiRxcqw6FKMaoY1I7drU4zfPp4bdGLid6w";
+	private String YOUTUBE_DEVELOPER_KEY = "AI39si7740iA4BBcqmSnvTXVe7IzZSJ3ujVsiwd6TnzVnxDOmP-etlNwegBUwPFj-0re5u3fotJx-kyAY1vz962IQAK8Q2NBBg";
 	
 	private String updateToYouTube() {
+		Log.i("updateToYouTube", "Entering");
+		
 		//Local video at mVideoUri
-
-
-		/*
-		 String YoutubeUri = "";
+		String YoutubeUri = "";
 		 
 		
 		String sUploadURL = "http://uploads.gdata.youtube.com/resumable/feeds/api/users/default/uploads";
@@ -81,14 +87,17 @@ public class MainActivity extends Activity {
 			connection = (HttpURLConnection) UploadURL.openConnection();
 			connection.setRequestMethod("POST");
 			
-			//TODO place it here or once per app lifetime?
-			getOAuthToken();
+/*			String temp = connection.getResponseMessage();
+			if (temp != null)
+				Log.i("temp", temp);
+	*/		
+			Log.i("updateToYouTube", "Got token!" + mToken);
 			
-			connection.setRequestProperty("Authorization", "Bearer ???");//TODO
+			connection.setRequestProperty("Authorization", "Bearer " + mToken);//TODO
 		    connection.setRequestProperty("GData-Version", "2");  
 		    connection.setRequestProperty("X-GData-Key", "key=" + YOUTUBE_DEVELOPER_KEY);  
 		    connection.setRequestProperty("Slug", mVideoName);  
-			
+		    connection.setRequestProperty("Content-Type", "application/atom+xml; charset=UTF-8");  
 			
 			//Send empty metadata
 			String urlParameters = ""; //
@@ -99,12 +108,33 @@ public class MainActivity extends Activity {
 		    connection.setDoInput(true);
 		    connection.setDoOutput(true);
 
-		    //Send request
+		    
+		    //Send request: Metadata
 		    DataOutputStream wr = new DataOutputStream (
 		                connection.getOutputStream ());
 		    wr.writeBytes (urlParameters);
 		    wr.flush ();
 		    wr.close ();
+		    Log.i("updateToYouTube", "Metadata Sent.");
+		    
+		    connection.connect();
+		    
+		    //Get Response
+		    String status = connection.getResponseMessage();
+		    int code = connection.getResponseCode();
+		    if (status != null)
+				Log.i("status", code + ": " + status);
+			
+/*	        BufferedReader in = new BufferedReader(
+	        		new InputStreamReader(
+                    connection.getInputStream()));
+	        String inputLine;
+	        while ((inputLine = in.readLine()) != null) 
+	        {
+	        	Log.i("Response From YouTube", inputLine);
+	        }
+*/	        
+	        
 		}
 		catch (MalformedURLException ex) {
 			Log.e("Upload To YouTube", ex.toString());
@@ -112,7 +142,7 @@ public class MainActivity extends Activity {
 		catch (IOException ex) {
 			Log.e("Upload To YouTube", ex.toString());
 		}
-		*/
+		
         
 		return "";// YoutubeUri;
 	}
@@ -196,15 +226,50 @@ public class MainActivity extends Activity {
 	  }
 */	
 	
-/*	private void TestGoogleAuthUtil(String mEmail, String mScope, String token)
+	private String mEmail = "wenlu.c.hu@gmail.com";
+	private String mToken;
+	//private int REQUEST_AUTHORIZATION = 5;
+	private void GetTokenWithGoogleAuthUtil()
 	{
+		final Context context = this;
+    	new Thread()
+    	{
+    	    @Override
+    	    public void run()
+    	    {
+    	    	String token = "";
+    			try {
+    			    token = GoogleAuthUtil.getToken(context, mEmail, "oauth2:" + Scopes.PLUS_LOGIN /**/);
+    			    Log.i("GoogleAuthUtil", "Got Token: " + token);
+    			} catch (UserRecoverableAuthException e) {
+    				Log.i("getToken", "Handling UserRecoverableAuthException");
+    				startActivity(e.getIntent());
+    			} catch(Exception ex) {
+    				Log.e("GoogleAuthUtil", "Problem Getting Token", ex);
+    				
+    			}
+    			
+    			mToken = token;
+    			updateToYouTube();
+    			
+        		Message msg = new Message();
+        		msg.obj = token;
+        		mHandler.sendMessage(msg);
 
-		try {
-		    token = GoogleAuthUtil.getToken(this, mEmail, mScope);
-		} catch {
-		}
-	}*/
+    	    }
+    	}.start();
+		
+	}
 	
+    private Handler mHandler = new Handler () {
+    	@Override
+    	public void handleMessage(Message msg) {
+    		mToken = (String) msg.obj;
+    		//updateToYouTube();
+    	}
+    };
+
+	@SuppressWarnings(value = { "unused" })
 	private String getOAuthToken() {
 		String sAccessTokenURL = "https://accounts.google.com/o/oauth2/token";
 		URL AccessTokenURL;
@@ -365,12 +430,22 @@ public class MainActivity extends Activity {
 	    
 	    mVideoView.start();
 	    
-		//Uri localVideoUri = Uri.fromFile( new File (mVideoPath));
-        //Intent intent = YouTubeIntents.createUploadIntent(this, localVideoUri);
-		Intent youtubeIntent = YouTubeIntents.createUploadIntent(this, mVideoUri);
-        startActivityForResult(youtubeIntent, ACTION_UPLOAD_VIDEO);
-        Log.i("Upload2Youtube", "Uploading");
-        
+	    
+		//Uploade Video to YouTube
+	    if (UPLOAD_WITH_YOUTUBE_INTENT)
+	    {
+	    	if (SAVE_VIDEO_TO_SDCARD)
+	    	{
+	    		Uri mVideoUri = Uri.fromFile( new File (mVideoPath));
+	    	}
+    		Intent youtubeIntent = YouTubeIntents.createUploadIntent(this, mVideoUri);
+	        startActivityForResult(youtubeIntent, ACTION_UPLOAD_VIDEO);
+	        Log.i("Upload2Youtube", "Uploading");
+	    }
+	    else
+	    {
+	    	GetTokenWithGoogleAuthUtil();// Will upload upon receiving token;
+	    }
         
 	}
 }
