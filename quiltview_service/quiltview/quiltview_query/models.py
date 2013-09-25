@@ -13,6 +13,7 @@ class User(models.Model):
     context = models.CharField(max_length = 2, choices = CONTEXT_CHOICES)
     location_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
     location_long = models.DecimalField(max_digits = 12, decimal_places = 8)
+    location_update_time = models.DateTimeField()
 
     # user
     google_account = models.CharField(max_length = 100)
