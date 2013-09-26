@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+'''
+Original sample code got from Google Play Services python library:
+https://developers.google.com/youtube/v3/libraries
+'''
+
 import httplib
 import httplib2
 import os
@@ -104,7 +109,8 @@ def initialize_upload(options):
     media_body=MediaFileUpload(options.file, chunksize=-1, resumable=True)
   )
 
-  resumable_upload(insert_request)
+  video_id = resumable_upload(insert_request)
+  return video_id
 
 
 def resumable_upload(insert_request):
@@ -140,16 +146,18 @@ def resumable_upload(insert_request):
       print "Sleeping %f seconds and then retrying..." % sleep_seconds
       time.sleep(sleep_seconds)
 
+    return response['id']
+
 
 if __name__ == '__main__':
   parser = OptionParser()
   parser.add_option("--file", dest="file", help="Video file to upload")
   parser.add_option("--title", dest="title", help="Video title",
-    default="Test Title")
+    default="QuiltView response")
   parser.add_option("--description", dest="description", help="Video description",
-    default="Test Description")
+    default="served as a video response to QuiltView service")
   parser.add_option("--category", dest="category", help="Video category",
-    default="22")
+    default="22")  # seems to be "people and blogs"
   parser.add_option("--keywords", dest="keywords",
     help="Video keywords, comma separated", default="")
   parser.add_option("--privacyStatus", dest="privacyStatus", help="Video privacy status",
