@@ -1,8 +1,16 @@
 from django.conf.urls import patterns, include, url
+from quiltview_query.api import UserResource, QueryResource, VideoResource, PromptResource
+from tastypie.api import Api
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
+
+dm = Api(api_name='dm')
+dm.register(UserResource())
+dm.register(QueryResource())
+dm.register(VideoResource())
+dm.register(PromtResource())
 
 urlpatterns = patterns('',
     # Examples:
@@ -15,4 +23,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
+
+    (r'^api/', include(dm.urls)),
 )

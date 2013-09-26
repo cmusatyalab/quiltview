@@ -1,2 +1,6 @@
 mysql-server mysql-client
 libmysqlclient-dev (otherwise cannot pip install mysql-python)
+#python-xmpp
+python-gflags
+
+django
