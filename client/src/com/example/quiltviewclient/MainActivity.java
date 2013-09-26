@@ -1,14 +1,9 @@
 package com.example.quiltviewclient;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.net.Uri;
@@ -24,9 +19,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.common.Scopes;
 import com.google.android.youtube.player.YouTubeIntents;
 
 public class MainActivity extends Activity {
@@ -98,167 +90,6 @@ public class MainActivity extends Activity {
         uploadingThread.start();
 	}
 	
-	//TODO Not working!
-	//return Youtube url
-	//Instructions: https://developers.google.com/youtube/2.0/developers_guide_protocol_resumable_uploads?csw=1#Resumable_uploads
-	private String YOUTUBE_DEVELOPER_KEY = "AI39si7740iA4BBcqmSnvTXVe7IzZSJ3ujVsiwd6TnzVnxDOmP-etlNwegBUwPFj-0re5u3fotJx-kyAY1vz962IQAK8Q2NBBg";
-	private String updateToYouTube() {
-		Log.i("updateToYouTube", "Entering");
-		
-		//Local video at mVideoUri
-		String YoutubeUri = "";
-		 
-		
-		String sUploadURL = "http://uploads.gdata.youtube.com/resumable/feeds/api/users/default/uploads";
-		URL UploadURL;
-		HttpURLConnection connection = null;  
-		
-		try {
-			UploadURL = new URL (sUploadURL);
-			connection = (HttpURLConnection) UploadURL.openConnection();
-			connection.setRequestMethod("POST");
-			
-/*			String temp = connection.getResponseMessage();
-			if (temp != null)
-				Log.i("temp", temp);
-	*/		
-			Log.i("updateToYouTube", "Got token!" + mToken);
-			
-			connection.setRequestProperty("Authorization", "Bearer " + mToken);
-		    connection.setRequestProperty("GData-Version", "2");  
-		    connection.setRequestProperty("X-GData-Key", "key=" + YOUTUBE_DEVELOPER_KEY);  
-		    connection.setRequestProperty("Slug", mVideoName);  
-		    connection.setRequestProperty("Content-Type", "application/atom+xml; charset=UTF-8");  
-			
-			//Send empty metadata
-			String urlParameters = ""; //
-			connection.setRequestProperty("Content-Length", "" + 
-		               Integer.toString(urlParameters.getBytes().length));
-					
-		    connection.setUseCaches (false);
-		    connection.setDoInput(true);
-		    connection.setDoOutput(true);
-
-		    
-		    //Send request: Metadata
-		    DataOutputStream wr = new DataOutputStream (
-		                connection.getOutputStream ());
-		    wr.writeBytes (urlParameters);
-		    wr.flush ();
-		    wr.close ();
-		    Log.i("updateToYouTube", "Metadata Sent.");
-		    
-		    connection.connect();
-		    
-		    //Get Response
-		    String status = connection.getResponseMessage();
-		    int code = connection.getResponseCode();
-		    if (status != null)
-				Log.i("status", code + ": " + status);
-			
-/*	        BufferedReader in = new BufferedReader(
-	        		new InputStreamReader(
-                    connection.getInputStream()));
-	        String inputLine;
-	        while ((inputLine = in.readLine()) != null) 
-	        {
-	        	Log.i("Response From YouTube", inputLine);
-	        }
-*/	        
-	        
-		}
-		catch (MalformedURLException ex) {
-			Log.e("Upload To YouTube", ex.toString());
-		} 
-		catch (IOException ex) {
-			Log.e("Upload To YouTube", ex.toString());
-		}
-		
-        
-		return "";// YoutubeUri;
-	}
-	
-	private String mAuthCode = "4/OSgN0SsgE7SfF2mPweKC-iDuXiL6.Uvy1lZwufiYQshQV0ieZDAqWaUCOggl";
-	private String CLIENT_ID = "12958789053.apps.googleusercontent.com"; 
-	private String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
-	
-	private String mEmail = "wenlu.c.hu@gmail.com";
-	private String mToken = null;
-	
-	@SuppressWarnings(value = { "unused" })
-	private void GetTokenWithGoogleAuthUtil()
-	{
-		final Context context = this;
-    	new Thread()
-    	{
-    	    @Override
-    	    public void run()
-    	    {
-    	    	String token = "";
-    			try {
-    			    token = GoogleAuthUtil.getToken(context, mEmail, "oauth2:" + Scopes.PLUS_LOGIN /**/);
-    			    Log.i("GoogleAuthUtil", "Got Token: " + token);
-    			} catch (UserRecoverableAuthException e) {
-    				Log.i("getToken", "Handling UserRecoverableAuthException");
-    				startActivity(e.getIntent());
-    			} catch(Exception ex) {
-    				Log.e("GoogleAuthUtil", "Problem Getting Token", ex);
-    			}
-    			
-    			mToken = token;
-    			updateToYouTube();
-
-    	    }
-    	}.start();
-		
-	}
-	
-
-	@SuppressWarnings(value = { "unused" })
-	private String getOAuthToken() {
-		String sAccessTokenURL = "https://accounts.google.com/o/oauth2/token";
-		URL AccessTokenURL;
-		HttpURLConnection connection = null;  
-		
-		try {
-			AccessTokenURL = new URL (sAccessTokenURL);
-			connection = (HttpURLConnection) AccessTokenURL.openConnection();
-			connection.setRequestMethod("POST");
-						
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		    connection.setRequestProperty("", "");  
-			
-			
-			//Send empty metadata
-			String urlParameters = "code=" + mAuthCode + "&"
-					+ "client_id=" + CLIENT_ID + "&" 
-					//+ "client_secret" +
-					+ "redirect_uri=" + "" + "&"
-					+ "";
-			connection.setRequestProperty("Content-Length", "" + 
-		               Integer.toString(urlParameters.getBytes().length));
-					
-		    connection.setUseCaches (false);
-		    connection.setDoInput(true);
-		    connection.setDoOutput(true);
-
-		    //Send request
-		    DataOutputStream wr = new DataOutputStream (
-		                connection.getOutputStream ());
-		    wr.writeBytes (urlParameters);
-		    wr.flush ();
-		    wr.close ();
-		}
-		catch (MalformedURLException ex) {
-			Log.e("Upload To YouTube", ex.toString());
-		} 
-		catch (IOException ex) {
-			Log.e("Upload To YouTube", ex.toString());
-		}
-		
-		return "";
-	}
-	
 	private CameraRecordingThread cameraRecorder = null;
 	private Camera mCamera = null;
     private CameraPreview mPreview = null;
@@ -313,7 +144,6 @@ public class MainActivity extends Activity {
 
 	
 	private int ACTION_TAKE_VIDEO=1; 
-	private int ACTION_AUTH_TOKEN=2;
 	private int ACTION_UPLOAD_VIDEO=3;
 	private void dispatchTakeVideoIntent() {
 	    Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
@@ -444,7 +274,13 @@ public class MainActivity extends Activity {
 	    }
 	    else
 	    {
-	    	GetTokenWithGoogleAuthUtil();// Will upload upon receiving token;
+	    	/*
+	    	 * Abandoned feature
+	    	 * Found no way to upload to youtube without starting youtube activity
+	    	 * with intent.
+	    	 */
+	    	
+	    	//GetTokenWithGoogleAuthUtil();// Will upload upon receiving token;
 	    }
 	
 	}
