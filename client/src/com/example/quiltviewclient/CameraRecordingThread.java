@@ -124,7 +124,8 @@ public class CameraRecordingThread extends Thread {
 		
         if (camera != null){
             camera.lock();
-            camera.release();
+            //Wenlu: Release it in MainActivity.OnDestroy();
+            //camera.release();
             camera = null;
         }
 		

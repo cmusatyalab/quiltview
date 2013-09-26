@@ -56,6 +56,12 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mCamera.release();
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -74,7 +80,7 @@ public class MainActivity extends Activity {
 			takeVideoWithCameraAPI();
 			//playVideo();
 			//uploadVideo();
-			sendVideoToServer();
+//			sendVideoToServer();
 		}
 		else
 		{
@@ -118,7 +124,7 @@ public class MainActivity extends Activity {
         
         try
         {
-        	Thread.sleep(10*1000); //record for 10 seconds
+        	Thread.sleep(3*1000); //record for 10 seconds
         } catch (InterruptedException ex) {
         	Log.e("takeVideoWithCameraAPI", "Sleep Interrupted" );
             try
