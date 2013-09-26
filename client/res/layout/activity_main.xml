@@ -14,11 +14,6 @@
 	    android:layout_height="wrap_content"
 	    android:onClick="recordVideo"
 	    android:text="@string/button_record" />
-    <Button
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:onClick="getAuthInfo"
-	    android:text="@string/button_auth" />
     <TextView
         android:id="@+id/status_update"
         android:layout_width="wrap_content"
