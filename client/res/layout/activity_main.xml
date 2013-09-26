@@ -20,13 +20,14 @@
 	    android:onClick="getAuthInfo"
 	    android:text="@string/button_auth" />
     <TextView
+        android:id="@+id/status_update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
-    <VideoView
-        android:id="@+id/replay_videoview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        ></VideoView>
+
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"/>
 </LinearLayout>
