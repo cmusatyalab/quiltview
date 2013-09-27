@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video segments cookie generator</title>
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}assets/css/bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/css/docs.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <h1>QuiltView responses</h1> <hr>
+    <b> {{ query.content }} </b>
+  
+    <p>
+      {{ responses|length }} responses found.
+    </p>
+    {% load tz %}
+    {% for response in responses %}
+        <a href="{{ response.url }}">{{ response.url }}</a> 
+      <br>
+    {% endfor %}
+
+    <p>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </p>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="{{ STATIC_URL }}assets/js/bootstrap.js"></script>
+  </body>
+</html>

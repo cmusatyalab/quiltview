@@ -52,7 +52,7 @@ class Query(models.Model):
     # query content
     content = models.CharField(max_length = 140)
     time_out = models.IntegerField()
-    back_time_allowance = models.IntegerField()
+    accepted_staleness = models.IntegerField()
     reward = models.IntegerField()
 
     # responses
@@ -70,7 +70,7 @@ class Video(models.Model):
     owner = models.ForeignKey(User)
     query_ID = models.ForeignKey(Query)
     url = models.CharField(max_length = 100)
-    upload_time = models.DateTimeField()
+    upload_time = models.DateTimeField(default = timezone.now())
     upload_location_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
     upload_location_long = models.DecimalField(max_digits = 12, decimal_places = 8)
 
@@ -99,4 +99,4 @@ class Prompt(models.Model):
         return self.id
 
     class Meta:
-        db_table = "quiltview_promt" 
+        db_table = "quiltview_prompt" 

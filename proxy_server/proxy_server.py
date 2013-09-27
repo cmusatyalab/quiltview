@@ -2,6 +2,7 @@
 
 import socket
 import struct
+import os
 from optparse import OptionParser
 
 import upload_youtube 
@@ -12,6 +13,10 @@ TYPE_LENGTH = 1
 TYPE_VIDEO = 2
 
 TMP_VIDEO_NAME = "uploaded_video.mp4"
+
+QUILTVIEW_URL = "http://typhoon.elijah.cs.cmu.edu:8000"
+VIDEO_RESOURCE = "/api/dm/video/"
+
 
 def startServer(host, port, buf, options):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,7 +47,17 @@ def startServer(host, port, buf, options):
         # STEP 2: upload to Youtube, get url back
         video_watch_id = upload_youtube.initialize_upload(options)   # this function handles all uploading...
 
-        # TODO: register new video at QuiltView
+        # STEP 3: register new video at QuiltView
+        new_video_entry = {"url" : "www.youtube.com/watch?v=%s" % video_watch_id, 
+                           "owner" : "/api/dm/user/1/", 
+                           "query_ID" : "/api/dm/query/1/", 
+                           "upload_location_lat" : "11.111111", 
+                           "upload_location_long" : "22.2222"
+                          }  # some fields are random for now
+        post_video.post(QUILTVIEW_URL, VIDEO_RESOURCE, new_video_entry)
+
+        # cleaning
+        os.remove(TMP_VIDEO_NAME)
 
 if __name__ == "__main__":
     parser = OptionParser()

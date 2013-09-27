@@ -26,6 +26,7 @@
             <input type="text" name="query_content" placeholder="e.g. What is the weather">
             at      
             <input type="text" name="query_location" placeholder="Pittsburgh">
+            ?
           </div>
         </div>
 
@@ -40,10 +41,42 @@
             </select>
           </div>
         </div>
+
+        <div class="row-fluid">
+          <div class="col-lg-2">
+            <b>Accepted staleness: </b>
+            <input type="text" class="form-control" name="accepted_staleness_n" placeholder="10">
+            <select>
+              <option>Minutes</option>
+              <option>Hours</option>
+              <option>Days</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-lg-2">
+            <b>Reward: </b>
+            <input type="text" class="form-control" name="reward" placeholder="1">
+          </div>
+        </div>
+
       </div>
-      <br>
+
+      {% if is_query %}
+        <hr>
+        <p>
+          {{ queries|length }} queries found.
+        </p>
+      {% load tz %}
+          {% for query in queries %}
+            {{ query.content }}  <a href="/quiltview/response?query_id={{ query.id }}">view responses</a> 
+            <br>
+          {% endfor %}
+      {% endif %}
+
       <p>
-        <button class="btn" type="submit">Submit</button>
+        <button class="btn btn-primary" type="submit">Submit</button>
       </p>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="{{ STATIC_URL }}assets/js/bootstrap.js"></script>
