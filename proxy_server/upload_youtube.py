@@ -109,11 +109,11 @@ def initialize_upload(options):
     media_body=MediaFileUpload(options.file, chunksize=-1, resumable=True)
   )
 
-  video_id = resumable_upload(insert_request)
+  video_id = resumable_upload(insert_request, options)
   return video_id
 
 
-def resumable_upload(insert_request):
+def resumable_upload(insert_request, options):
   response = None
   error = None
   retry = 0
