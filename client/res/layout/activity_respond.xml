@@ -9,25 +9,21 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".RespondActivity" >
 
-        <TextView
-        android:id="@+id/txt_result"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    
 	<Button
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:onClick="triggerRespond"
-	    android:text="@string/button_respond" />
-	<Button
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:onClick="triggerPull"
-	    android:text="@string/button_pull" />	
-    <EditText
-        android:id="@+id/txt_input"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
+	    android:onClick="recordVideo"
+	    android:text="@string/button_record" />
 	
+    <TextView
+        android:id="@+id/status_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello_world" />
+
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"/>
 </LinearLayout>
