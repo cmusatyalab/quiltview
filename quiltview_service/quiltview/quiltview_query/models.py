@@ -70,7 +70,7 @@ class Video(models.Model):
     owner = models.ForeignKey(User)
     query_ID = models.ForeignKey(Query)
     url = models.CharField(max_length = 100)
-    upload_time = models.DateTimeField()
+    upload_time = models.DateTimeField(default = timezone.now())
     upload_location_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
     upload_location_long = models.DecimalField(max_digits = 12, decimal_places = 8)
 
