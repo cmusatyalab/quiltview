@@ -3,6 +3,7 @@ import os
 from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 #from django.contrib.auth.models import User
+from tastypie.cache import NoCache
 from tastypie.resources import ModelResource
 from tastypie import fields
 from quiltview_query.models import User
@@ -33,7 +34,7 @@ class UserResource(ModelResource):
         list_allowed_methods = ['get', 'post', 'put']
  
 class QueryResource(ModelResource):
-    requester = fields.ForeignKey(UserResource, 'user')
+    requester = fields.ForeignKey(UserResource, 'requester')
 
     class Meta:
         serializer = PrettyJSONSerializer()
@@ -54,6 +55,7 @@ class VideoResource(ModelResource):
         always_return_data = True
         resource_name = 'video'
         list_allowed_methods = ['get', 'post', 'put']
+        cache = NoCache()
 
 class PromptResource(ModelResource):
     user = fields.ForeignKey(UserResource, 'user')

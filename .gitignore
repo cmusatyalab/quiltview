@@ -6,3 +6,4 @@
 *.avi
 *.jpg
 test/
+ENV/

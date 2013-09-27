@@ -10,7 +10,7 @@ dm = Api(api_name='dm')
 dm.register(UserResource())
 dm.register(QueryResource())
 dm.register(VideoResource())
-dm.register(PromtResource())
+dm.register(PromptResource())
 
 urlpatterns = patterns('',
     # Examples:
