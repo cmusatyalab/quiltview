@@ -17,6 +17,8 @@ urlpatterns = patterns('',
     # url(r'^$', 'quiltview.views.home', name='home'),
     # url(r'^quiltview/', include('quiltview.foo.urls')),
     url(r'^quiltview/$', 'quiltview_query.views.index'),
+    url(r'^quiltview/query/$', 'quiltview_query.views.query'),
+    url(r'^quiltview/response/$', 'quiltview_query.views.response'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

@@ -52,7 +52,7 @@ class Query(models.Model):
     # query content
     content = models.CharField(max_length = 140)
     time_out = models.IntegerField()
-    back_time_allowance = models.IntegerField()
+    accepted_staleness = models.IntegerField()
     reward = models.IntegerField()
 
     # responses
@@ -99,4 +99,4 @@ class Prompt(models.Model):
         return self.id
 
     class Meta:
-        db_table = "quiltview_promt" 
+        db_table = "quiltview_prompt" 
