@@ -52,7 +52,9 @@ public class RespondActivity extends Activity {
         
         view_camera = (FrameLayout)findViewById(R.id.camera_preview);
         view_camera.addView(mPreview);
-        
+
+		displayQuery();
+
 	}
 
 	@Override
@@ -68,11 +70,17 @@ public class RespondActivity extends Activity {
 		return true;
 	}
 
+	private void displayQuery() {
+		Intent queryIntent = getIntent();
+		String query = queryIntent.getStringExtra(RequestPullingService.RESPOND_INTENT_QUERY);
+		TextView textView = (TextView) findViewById(R.id.status_update);
+		textView.setText(query);
+	}
+	
 	/* Take a 10-sec video 
 	 * Send it to the server
 	 */
 	public void recordVideo(View view) throws IOException {
-		
 		
 		//recordVideo
 		if (RECORD_VIDEO_AUTOMATICALLY)
