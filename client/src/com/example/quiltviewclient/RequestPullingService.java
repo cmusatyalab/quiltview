@@ -29,26 +29,31 @@ public class RequestPullingService extends IntentService {
 	    public static final String PARAM_OUT_MSG = "omsg";
 	    private static final int PullRequestLimit = 10;
 	    private static final boolean InfiniteLoop = false;
+	    private static final int PretendReceivingRequest = 3;
 	    @Override
 	    protected void onHandleIntent(Intent intent) {
 	    	Log.i(LOG_TAG, "Handling new intent.");
-	        String msg = intent.getStringExtra(PARAM_IN_MSG);
 	        
 	        int count = 0;
 	        String resultTxt = "";
 	        while (InfiniteLoop || (count < PullRequestLimit)) {
 		        SystemClock.sleep(3000); // 3 seconds
-		        resultTxt = msg + " "
+		        resultTxt = " "
 		            + DateFormat.format("MM/dd/yy h:mmaa", System.currentTimeMillis());
 		        Log.i(LOG_TAG, "Want to pull here." + resultTxt);
 		        count ++;
+		        
+		        if (count == PretendReceivingRequest) {
+		        	Intent respondIntent = new Intent(this, RespondActivity.class);
+		        	respondIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		        	startActivity(respondIntent);
+		        }
 	        }
 	        
 	     // processing done here….
 	        Intent broadcastIntent = new Intent();
 	        broadcastIntent.setAction(ResponseReceiver.ACTION_RESP);
 	        broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
-	        broadcastIntent.putExtra(PARAM_OUT_MSG, resultTxt);
 	        sendBroadcast(broadcastIntent);
 	    }
 	}	
