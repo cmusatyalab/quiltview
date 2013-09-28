@@ -33,15 +33,18 @@ def query(request):
                       interest_location_long = lng, 
                      )
         query.save()
+        return render_to_response('quiltview/index.html',
+            {'query':query, 'is_post':True,
+            }, RequestContext(request))
+    else:
+        # show existing queries
+        queries = Query.objects.order_by('requested_time').reverse()
+        if queries.count > 10:
+            queries = queries[:10]
 
-    # show existing queries
-    queries = Query.objects.reverse()
-    if queries.count > 10:
-        queries = queries[:10]
-
-    return render_to_response('quiltview/index.html',
-        {'queries':queries, 'is_query':True,
-        }, RequestContext(request))
+        return render_to_response('quiltview/index.html',
+            {'queries':queries, 'is_check':True,
+            }, RequestContext(request))
 
 def response(request):
     req_query_id = int(request.GET['query_id'])

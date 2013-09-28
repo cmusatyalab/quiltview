@@ -63,22 +63,34 @@
 
       </div>
 
-      {% if is_query %}
+      <p>
+        <button class="btn" type="submit" name="post" value="False">Check existing</button>
+        <button class="btn btn-primary" type="submit" name="post" value="True">Submit</button>
+      </p>
+
+      {% if is_post %}
+        <hr>
+        Your query "{{ query.content }}" has been sent. <br>
+        Location has been identified as ({{ query.interest_location_lat }}, {{ query.interest_location_lat }})
+        
+      {% endif %}
+
+      {% if is_cache %}
+        <hr>
+      {% endif %}
+
+      {% if is_check %}
         <hr>
         <p>
           {{ queries|length }} queries found.
         </p>
       {% load tz %}
           {% for query in queries %}
-            {{ query.content }}  <a href="/quiltview/response?query_id={{ query.id }}">view responses</a> 
+            {{ query.content }} (posted at {{ query.requested_time }})  <a href="/quiltview/response?query_id={{ query.id }}">view responses</a> 
             <br>
           {% endfor %}
       {% endif %}
 
-      <p>
-        <button class="btn" type="submit" name="post" value="False">Check existing</button>
-        <button class="btn btn-primary" type="submit" name="post" value="True">Submit</button>
-      </p>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="{{ STATIC_URL }}assets/js/bootstrap.js"></script>
   </body>
