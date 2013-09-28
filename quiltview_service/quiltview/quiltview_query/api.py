@@ -46,7 +46,7 @@ class QueryResource(ModelResource):
 
 class VideoResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner')
-    query_ID = fields.ForeignKey(QueryResource, 'query_ID')
+    query = fields.ForeignKey(QueryResource, 'query')
 
     class Meta:
         serializer = PrettyJSONSerializer()
@@ -59,8 +59,8 @@ class VideoResource(ModelResource):
 
 class PromptResource(ModelResource):
     user = fields.ForeignKey(UserResource, 'user')
-    video_ID = fields.ForeignKey(VideoResource, 'video_ID')
-    query_ID = fields.ForeignKey(QueryResource, 'query_ID')
+    video = fields.ForeignKey(VideoResource, 'video', null=True)
+    query = fields.ForeignKey(QueryResource, 'query')
 
     class Meta:
         serializer = PrettyJSONSerializer()
