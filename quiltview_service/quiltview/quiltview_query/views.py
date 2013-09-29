@@ -22,6 +22,9 @@ def query(request):
 
 
     if request.GET['post']=="True":  # add a new query
+        # TODO: check cache
+        
+
         # get lat and lng of the given location
         (lat, lng) = location.getLocationFromAddress(req_query_location)
 
@@ -39,11 +42,12 @@ def query(request):
     else:
         # show existing queries
         queries = Query.objects.order_by('requested_time').reverse()
+        query_count = queries.count
         if queries.count > 10:
             queries = queries[:10]
 
         return render_to_response('quiltview/index.html',
-            {'queries':queries, 'is_check':True,
+            {'queries':queries, 'query_count':query_count, 'is_check':True,
             }, RequestContext(request))
 
 def response(request):
