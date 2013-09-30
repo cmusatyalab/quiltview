@@ -82,7 +82,7 @@
       {% if is_check %}
         <hr>
         <p>
-          {{ queries|length }} queries found.
+          {{ query_count }} queries found. Here's the first {{ queries|length }}.
         </p>
       {% load tz %}
           {% for query in queries %}
