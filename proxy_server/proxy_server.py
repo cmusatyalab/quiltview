@@ -8,10 +8,6 @@ from optparse import OptionParser
 import upload_youtube 
 import post_video
 
-TYPE_JSON = 0
-TYPE_LENGTH = 1
-TYPE_VIDEO = 2
-
 TMP_VIDEO_NAME = "uploaded_video.mp4"
 
 QUILTVIEW_URL = "http://typhoon.elijah.cs.cmu.edu:8000"
@@ -27,30 +23,38 @@ def startServer(host, port, buf, options):
         print "waiting for connection"
         conn, addr = s.accept()
         print 'Connected by', addr
-        current_type = TYPE_LENGTH
-        while True:
+
+        data = conn.recv(4)
+        query_ID = struct.unpack("!I", data)[0]
+        print "Query ID = %d" % query_ID
+        data = conn.recv(4)
+        content_len = struct.unpack("!I", data)[0]
+        print "Content length = %d" % content_len
+        query_content = ''
+        if not content_len == 0:
+            query_content = conn.recv(content_len)
+        print "Query content = %s" % query_content
+        data = conn.recv(4)
+        video_len = struct.unpack("!I", data)[0]  # Zhuo: why use this?
+        print "Video length = %d" % video_len
+        video_file = open(TMP_VIDEO_NAME, 'w')
+        data = conn.recv(buf)
+        while data: 
+            video_file.write(data)
             data = conn.recv(buf)
-            if not data: 
-                print "Connection terminated by the other side"
-                break
-            if current_type == TYPE_LENGTH:
-                video_len = struct.unpack("!I", data)[0]  # Zhuo: why use this?
-                print "Length = %d" % video_len
-                video_file = open(TMP_VIDEO_NAME, 'w')
-                current_type = TYPE_VIDEO
-            elif current_type == TYPE_VIDEO:
-                video_file.write(data)
-                
+        print "Connection terminated by the other side"
+               
         conn.close()
         video_file.close()
 
         # STEP 2: upload to Youtube, get url back
+        options.title = "QuiltView: %s" % query_content
         video_watch_id = upload_youtube.initialize_upload(options)   # this function handles all uploading...
 
         # STEP 3: register new video at QuiltView
-        new_video_entry = {"url" : "www.youtube.com/watch?v=%s" % video_watch_id, 
+        new_video_entry = {"url" : "http://www.youtube.com/watch?v=%s" % video_watch_id, 
                            "owner" : "/api/dm/user/1/", 
-                           "query_ID" : "/api/dm/query/1/", 
+                           "query" : "/api/dm/query/%d/" % query_ID, 
                            "upload_location_lat" : "11.111111", 
                            "upload_location_long" : "22.2222"
                           }  # some fields are random for now

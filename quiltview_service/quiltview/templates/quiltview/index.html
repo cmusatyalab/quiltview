@@ -71,18 +71,23 @@
       {% if is_post %}
         <hr>
         Your query "{{ query.content }}" has been sent. <br>
-        Location has been identified as ({{ query.interest_location_lat }}, {{ query.interest_location_lat }})
+        Location has been identified as ({{ query.interest_location_lat }}, {{ query.interest_location_long }})
         
       {% endif %}
 
       {% if is_cache %}
         <hr>
+        <p>
+          We found a similar query in our system: "{{ query.content }}" <br>
+          You can view responses of the matched query <a href="/quiltview/response?query_id={{ query.id }}">here</a> <br>
+          Or <a href="/quiltview/query?{{ parameter }}">reload here</a>
+        </p>
       {% endif %}
 
       {% if is_check %}
         <hr>
         <p>
-          {{ query_count }} queries found. Here's the first {{ queries|length }}.
+          {{ query_count }} queries exist in our database. Here's the first {{ queries|length }}.
         </p>
       {% load tz %}
           {% for query in queries %}

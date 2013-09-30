@@ -7,6 +7,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.utils import timezone
+import datetime
 
 import location
 
@@ -17,14 +18,15 @@ def query(request):
     req_query_content = request.GET['query_content']
     req_query_location = request.GET['query_location']
     req_time_out_n = request.GET['time_out_n']
+    if req_time_out_n:
+        req_time_out = req_time_out_n * 60
     req_accepted_staleness_n = request.GET['accepted_staleness_n']
+    if req_accepted_staleness_n:
+        req_accepted_staleness = req_accepted_staleness_n * 60
     req_reward = request.GET['reward']
 
 
     if request.GET['post']=="True":  # add a new query
-        # TODO: check cache
-        
-
         # get lat and lng of the given location
         (lat, lng) = location.getLocationFromAddress(req_query_location)
 
@@ -35,10 +37,33 @@ def query(request):
                       interest_location_lat = lat, 
                       interest_location_long = lng, 
                      )
+        if req_time_out_n:
+            query.time_out = req_time_out
+        if req_accepted_staleness_n:
+            query.accepted_staleness = req_accepted_staleness
+
+        # check cache
+        matched_queries = Query.objects.filter(content = "%s at %s?" % (req_query_content, req_query_location)).filter(requested_time__gte = timezone.now() - datetime.timedelta(seconds = query.accepted_staleness))
+        if matched_queries.count() > 0:   # cache hit
+            query.cache_hit = True
+            matched_query = matched_queries.latest('requested_time')
+            req_reload = request.GET.get('reload', 'False')
+            if req_reload == "True":
+                query.reload_query = True
+
         query.save()
-        return render_to_response('quiltview/index.html',
-            {'query':query, 'is_post':True,
-            }, RequestContext(request))
+
+        if query.cache_hit and (not query.reload_query):    # cache hit
+            # prepare parameters to reload
+            parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True" % (req_query_content, 
+                req_query_location, req_time_out_n, req_accepted_staleness_n, req_reward)
+            return render_to_response('quiltview/index.html',
+                {'query':matched_query, 'is_cache':True, 'parameter':parameter_string,
+                }, RequestContext(request))
+        else:     # not cached or reloaded
+            return render_to_response('quiltview/index.html',
+                {'query':query, 'is_post':True,
+                }, RequestContext(request))
     else:
         # show existing queries
         queries = Query.objects.order_by('requested_time').reverse()
@@ -61,14 +86,20 @@ def response(request):
 
 def latest(request):
     req_user_id = request.GET['user_id']
+    req_user_lat = request.GET['lat']
+    req_user_lng = request.GET['lng']
     latest_query = Query.objects.latest('requested_time')
     user = User.objects.get(id = req_user_id)
+    user.location_lat = req_user_lat
+    user.location_long = req_user_lng
+    user.location_update_time = timezone.now()
+    user.save()
 
     # check prompts
     prompts = Prompt.objects.filter(user_id = req_user_id).filter(query_id = latest_query.id)
 
     response_data = {}
-    if prompts.count() == 0:
+    if prompts.count() == 0 and (not (latest_query.cache_hit and (not latest_query.reload_query))):
         prompt = Prompt(user = User.objects.get(id = req_user_id),
                         query = latest_query,
                         requested_time = latest_query.requested_time,
@@ -79,6 +110,7 @@ def latest(request):
         prompt.save()
 
         response_data['content'] = latest_query.content
+        response_data['query_id'] = latest_query.id
     else:
         pass
 
