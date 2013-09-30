@@ -36,6 +36,7 @@ def query(request):
                       requester = user, 
                       interest_location_lat = lat, 
                       interest_location_long = lng, 
+                      requested_time = timezone.now()
                      )
         if req_time_out_n:
             query.time_out = req_time_out
@@ -43,7 +44,7 @@ def query(request):
             query.accepted_staleness = req_accepted_staleness
 
         # check cache
-        matched_queries = Query.objects.filter(content = "%s at %s?" % (req_query_content, req_query_location)).filter(requested_time__gte = timezone.now() - datetime.timedelta(seconds = query.accepted_staleness))
+        matched_queries = Query.objects.filter(content = "%s at %s?" % (req_query_content, req_query_location)).filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))
         if matched_queries.count() > 0:   # cache hit
             query.cache_hit = True
             matched_query = matched_queries.latest('requested_time')
@@ -54,6 +55,7 @@ def query(request):
         query.save()
 
         if query.cache_hit and (not query.reload_query):    # cache hit
+            print "Cache hit!!!"
             # prepare parameters to reload
             parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True" % (req_query_content, 
                 req_query_location, req_time_out_n, req_accepted_staleness_n, req_reward)

@@ -34,12 +34,16 @@ class User(models.Model):
     def __unicode__(self):
         return self.google_account
 
+    def save(self, *args, **kwargs):
+         self.location_update_time = timezone.now()
+         return super(Segment, self).save(*args, **kwargs)
+
     class Meta:
         db_table = "quiltview_user"
 
 class Query(models.Model):
     # time and location
-    requested_time = models.DateTimeField(default = timezone.now())
+    requested_time = models.DateTimeField()
     # TODO: this is not updated now...
     latest_upload_time = models.DateTimeField(null=True, blank=True)
     interest_location_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
@@ -57,8 +61,8 @@ class Query(models.Model):
     reward = models.IntegerField(default = 1)
 
     # responses
-    cache_hit = models.BooleanField()
-    reload_query = models.BooleanField()
+    cache_hit = models.BooleanField(default = False)
+    reload_query = models.BooleanField(default = False)
     #video_responses = models.ManyToManyField(Video)
 
     def __unicode__(self):
@@ -77,6 +81,10 @@ class Video(models.Model):
 
     def __unicode__(self):
         return self.url
+
+    def save(self, *args, **kwargs):
+         self.upload_time = timezone.now()
+         return super(Segment, self).save(*args, **kwargs)
 
     class Meta:
         db_table = "quiltview_video"
