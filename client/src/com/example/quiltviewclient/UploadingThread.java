@@ -22,6 +22,17 @@ public class UploadingThread extends Thread {
 		mHandler = handler;
 	}
 	
+	private String mQuery = null;
+	public void setQuery(String query) {
+		mQuery = query;
+	}
+	
+	private int mQueryID = -1;
+	public void setQueryID(int queryID) {
+		mQueryID = queryID;
+	}
+	
+	
 	public void run() {
 		sendVideo();
 	}
@@ -43,6 +54,13 @@ public class UploadingThread extends Thread {
     		OutputStream outStream = socket.getOutputStream();
             //InputStream inStream = socket.getInputStream();
 
+    		Log.i("sendVideo", "Answer to Query #" + mQueryID + ": " + mQuery);
+    		byte[] queryID = pack(mQueryID);
+    		outStream.write(queryID);
+    		byte[] queryLen = pack(mQuery.length());
+    		outStream.write(queryLen);
+    		byte[] query = mQuery.getBytes();
+    		outStream.write(query);
     	
             Log.i("sendVideo", "Video address: " + mVideoPath);
             File pic = new File(mVideoPath);

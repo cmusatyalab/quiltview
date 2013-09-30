@@ -53,7 +53,7 @@ public class RespondActivity extends Activity {
         view_camera = (FrameLayout)findViewById(R.id.camera_preview);
         view_camera.addView(mPreview);
 
-		displayQuery();
+        extractAndDisplayQuery();
 
 	}
 
@@ -69,12 +69,15 @@ public class RespondActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
-	private void displayQuery() {
+	
+	String mQuery = null;
+	int mQueryID = -1;
+	private void extractAndDisplayQuery() {
 		Intent queryIntent = getIntent();
-		String query = queryIntent.getStringExtra(RequestPullingService.RESPOND_INTENT_QUERY);
+		mQuery = queryIntent.getStringExtra(RequestPullingService.RESPOND_INTENT_QUERY);
+		mQueryID = queryIntent.getIntExtra(RequestPullingService.RESPOND_INTENT_QUERY_ID, -1);
 		TextView textView = (TextView) findViewById(R.id.status_update);
-		textView.setText(query);
+		textView.setText(mQueryID + ": " + mQuery);
 	}
 	
 	/* Take a 10-sec video 
@@ -101,6 +104,9 @@ public class RespondActivity extends Activity {
         uploadingThread = new UploadingThread();
         uploadingThread.setVideoPath(mVideoPath);
         uploadingThread.setHandler(mHandler);
+        uploadingThread.setQuery(mQuery);
+        uploadingThread.setQueryID(mQueryID);
+        
         uploadingThread.start();
 	}
 	

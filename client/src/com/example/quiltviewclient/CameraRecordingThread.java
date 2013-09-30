@@ -90,7 +90,7 @@ public class CameraRecordingThread extends Thread {
         Log.i(LOG_TAG, "Video Path: " + mVideoPath);
         Log.i(LOG_TAG, "Video Path: " + video.toString());
         videoRecorder.setOutputFile(video.toString());
-        videoRecorder.setVideoFrameRate(30);
+        videoRecorder.setVideoFrameRate(30); //TODO Root for StartFail on Glass
         
         videoRecorder.setPreviewDisplay(previewSurface);
         // if any of the above configuration is missing, prepare() will fail
