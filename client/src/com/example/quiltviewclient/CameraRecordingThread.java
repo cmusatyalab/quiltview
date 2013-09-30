@@ -6,22 +6,17 @@
 package com.example.quiltviewclient;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.IOException;
 
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.net.LocalServerSocket;
-import android.net.LocalSocket;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Surface;
 
 public class CameraRecordingThread extends Thread {
     private static final String LOG_TAG = "Camera Recording Thread";
-    
-    private static final int LOCAL_BUFF_SIZE = 102400;
     
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -30,9 +25,9 @@ public class CameraRecordingThread extends Thread {
     private Camera camera;
     private Surface previewSurface;
     private boolean isRecording;
-    
+        
     public CameraRecordingThread() {
-        videoRecorder = null;
+    	videoRecorder = null;
         camera = null;
         isRecording = false;
         previewSurface = null;

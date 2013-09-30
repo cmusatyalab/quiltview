@@ -1,11 +1,15 @@
 package com.example.quiltviewclient;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.hardware.Camera.PreviewCallback;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,6 +25,8 @@ import android.widget.VideoView;
 
 import com.google.android.youtube.player.YouTubeIntents;
 
+import com.example.quiltviewclient.StreamingThread;
+
 public class RespondActivity extends Activity {
 
 	/*
@@ -29,7 +35,10 @@ public class RespondActivity extends Activity {
 	private final boolean SAVE_VIDEO_TO_SDCARD = true; //Save to SD card or internal locations
 	private final boolean UPLOAD_WITH_YOUTUBE_INTENT = true;
 	private final boolean RECORD_VIDEO_AUTOMATICALLY = true; 
-
+	
+	private static final int LOCAL_OUTPUT_BUFF_SIZE = 1024 * 100;
+	
+	private boolean hasStarted = false;
 	
 	private UploadingThread uploadingThread = null;
 
@@ -91,7 +100,7 @@ public class RespondActivity extends Activity {
 			takeVideoWithCameraAPI();
 			//playVideo();
 			//uploadVideo();
-			sendVideoToServer();
+			//sendVideoToServer();
 		}
 		else
 		{
@@ -111,9 +120,52 @@ public class RespondActivity extends Activity {
 	}
 	
 	private CameraRecordingThread cameraRecorder = null;
+	private StreamingThread streamingThread = null;
 	private Camera mCamera = null;
     private CameraPreview mPreview = null;
 	private FrameLayout view_camera = null;
+	private ByteArrayOutputStream bufferedOutput;
+	private Handler streamingHandler;
+	private long startedTime;
+	
+	private PreviewCallback previewCallback = new PreviewCallback() {
+        public void onPreviewFrame(byte[] frame, Camera mCamera) {
+//            Log.v("OnPreviewCallBack", "got one frame");
+            if ( hasStarted ) {
+            	Log.v("OnPreviewCallBack", "got one frame to transmit");
+                Camera.Parameters parameters = mCamera.getParameters();
+                Camera.Size size = parameters.getPreviewSize();
+//                long time1 = System.currentTimeMillis();
+                YuvImage image = new YuvImage(frame, parameters.getPreviewFormat(), size.width, size.height, null);
+//                long time2 = System.currentTimeMillis();
+//                long elapseTimeYUV = time2 - time1;
+                image.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 60, bufferedOutput);
+//                long time3 = System.currentTimeMillis();
+//                long elapseTimeJPEG =  time3 - time2;
+
+                // now ask streaming thread to send packet
+                // streamingHandler = streamingThread.getHandler();
+                Message msg_out = Message.obtain();
+                Bundle data = new Bundle();
+                data.putByteArray("data", bufferedOutput.toByteArray());
+                bufferedOutput.reset();
+//                long time4 = System.currentTimeMillis();
+//                data.putLong("time", time4);
+                msg_out.what = StreamingThread.CODE_SEND_PACKET;
+                msg_out.setData(data);
+                
+//                Log.d("OnPreviewCallBack", "elapse time: " + time1 + ", " + time3);
+                Log.v("OnPreviewCallBack", "sent a message");
+                streamingHandler.sendMessage(msg_out);
+                if (System.currentTimeMillis() - startedTime > 5 * 1000) {
+                	hasStarted = false;
+                	msg_out = Message.obtain();
+                	msg_out.what = StreamingThread.CODE_SEND_STOP;
+                	streamingHandler.sendMessage(msg_out);
+                }
+            }
+        }
+    };
 	
 	private void takeVideoWithCameraAPI() throws IOException {
 		
@@ -125,7 +177,6 @@ public class RespondActivity extends Activity {
         
         mCamera.startPreview();
         
-        cameraRecorder = null;
 		if (cameraRecorder == null){
             cameraRecorder = new CameraRecordingThread();
             Log.i("takeVideoWithCameraAPI", "Created a new camera recording thread");
@@ -134,30 +185,70 @@ public class RespondActivity extends Activity {
         cameraRecorder.setCamera(mCamera);
         cameraRecorder.setPreviewSurface(mPreview.getHolder().getSurface());
         
-        cameraRecorder.start();//run() in a new thread
+        mPreview.setPreviewCallback(previewCallback);
         
-        try
-        {
-        	Thread.sleep(3*1000); //record for 10 seconds
-        } catch (InterruptedException ex) {
-        	Log.e("takeVideoWithCameraAPI", "Sleep Interrupted" );
-            try
-            {
-            	Thread.sleep(10*1000); //record for 10 seconds
-            } catch (InterruptedException exception) {
-            	//Failed again
-            	//Let it be.
-            }        	
+        //cameraRecorder.start();//run() in a new thread
+        
+        if (streamingThread == null)
+            streamingThread = new StreamingThread(1, cameraRecorder.getOutputFileDescriptor(), "128.2.213.25", 7950);
+        
+        streamingThread.start();
+        Log.i("takeVideoWithCameraAPI", "StreamingThread starts");
+        
+        bufferedOutput = new ByteArrayOutputStream(LOCAL_OUTPUT_BUFF_SIZE);
+        streamingHandler = streamingThread.getHandler();
+        while (streamingHandler == null) {
+            try {
+                Log.d("takeVideoWithCameraAPI", "Sleep a little bit to wait for the streaming Handler to get prepared");
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Log.e("takeVideoWithCameraAPI", "Error in sleeping...: " + e.getMessage());
+            }
+            streamingHandler = streamingThread.getHandler();
         }
+        
+        Log.d("takeVideoWithCameraAPI", "Now starting to stream");
+        // send query ID
+        Message msg_out = Message.obtain();
+        Bundle data = new Bundle();
+        data.putInt("query_ID", mQueryID);
+        msg_out.what = StreamingThread.CODE_SEND_QUERY_ID;
+        msg_out.setData(data);
+        streamingHandler.sendMessage(msg_out);
+        
+        msg_out = Message.obtain();
+        data = new Bundle();
+        data.putString("content", mQuery);
+        msg_out.what = StreamingThread.CODE_SEND_CONTENT;
+        msg_out.setData(data);
+        streamingHandler.sendMessage(msg_out);
+        
+        startedTime = System.currentTimeMillis();
+        hasStarted = true;
+        
+//        try
+//        {
+//        	Log.d("takeVideoWithCameraAPI", "Sleep for 10 secs" );
+//        	Thread.sleep(5*1000); //record for 10 seconds
+//        } catch (InterruptedException ex) {
+//        	Log.e("takeVideoWithCameraAPI", "Sleep Interrupted" );
+//            try
+//            {
+//            	Thread.sleep(10*1000); //record for 10 seconds
+//            } catch (InterruptedException exception) {
+//            	//Failed again
+//            	//Let it be.
+//            }        	
+//        }
         
         //Finish recording
-        cameraRecorder.stopCapturing();
-        try {
-        	Thread.sleep(1000); //record for 10 seconds
-        } catch (InterruptedException ex) {
-        	
-        }
-        mVideoPath = cameraRecorder.getVideoPath();
+//        cameraRecorder.stopCapturing();
+//        try {
+//        	Thread.sleep(1000); //record for 10 seconds
+//        } catch (InterruptedException ex) {
+//        	
+//        }
+//        mVideoPath = cameraRecorder.getVideoPath();
         
         
 	}
