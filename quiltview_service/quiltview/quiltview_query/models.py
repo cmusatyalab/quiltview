@@ -36,7 +36,7 @@ class User(models.Model):
 
     def save(self, *args, **kwargs):
          self.location_update_time = timezone.now()
-         return super(Segment, self).save(*args, **kwargs)
+         return super(User, self).save(*args, **kwargs)
 
     class Meta:
         db_table = "quiltview_user"
@@ -84,7 +84,7 @@ class Video(models.Model):
 
     def save(self, *args, **kwargs):
          self.upload_time = timezone.now()
-         return super(Segment, self).save(*args, **kwargs)
+         return super(Video, self).save(*args, **kwargs)
 
     class Meta:
         db_table = "quiltview_video"
