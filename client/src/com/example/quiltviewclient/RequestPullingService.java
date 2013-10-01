@@ -10,13 +10,18 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.text.format.DateFormat;
 import android.util.Log;
 
@@ -81,6 +86,37 @@ public class RequestPullingService extends IntentService {
         	respondIntent.putExtra(RESPOND_INTENT_QUERY, query);
         	respondIntent.putExtra(RESPOND_INTENT_QUERY_ID, queryID);
         	startActivity(respondIntent);
+
+//	    	NotificationCompat.Builder mBuilder =
+//	    	        new NotificationCompat.Builder(this)
+//	    	        .setSmallIcon(R.drawable.ic_launcher)
+//	    	        .setContentTitle("My notification")
+//	    	        .setContentText("Hello World!");
+//
+//	    	// The stack builder object will contain an artificial back stack for the
+//	    	// started Activity.
+//	    	// This ensures that navigating backward from the Activity leads out of
+//	    	// your application to the Home screen.
+//	    	TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+//	    	// Adds the back stack for the Intent (but not the Intent itself)
+//	    	stackBuilder.addParentStack(RespondActivity.class);
+//	    	// Adds the Intent that starts the Activity to the top of the stack
+//	    	stackBuilder.addNextIntent(respondIntent);
+//	    	PendingIntent resultPendingIntent =
+//	    	        stackBuilder.getPendingIntent(
+//	    	            0,
+//	    	            PendingIntent.FLAG_UPDATE_CURRENT
+//	    	        );
+//	    	mBuilder.setContentIntent(resultPendingIntent);
+//	    	Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.ringtone1);
+//	    	mBuilder.setSound(sound);
+//	    	
+//	    	NotificationManager mNotificationManager =
+//	    	    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//	    	// mId allows you to update the notification later on.
+//	    	int mId = 11; //TODO ??
+//	    	mNotificationManager.notify(mId, mBuilder.build());
+	    	
 	    }
 	    
     	// Acquire a reference to the system Location Manager
