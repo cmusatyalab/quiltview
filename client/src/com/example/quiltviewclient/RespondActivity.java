@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -26,6 +27,7 @@ import android.widget.VideoView;
 import com.google.android.youtube.player.YouTubeIntents;
 
 import com.example.quiltviewclient.StreamingThread;
+
 
 public class RespondActivity extends Activity {
 
@@ -54,10 +56,12 @@ public class RespondActivity extends Activity {
 		
 		// Create an instance of Camera
         mCamera = Camera.open();
+        Log.i("OnCreate", "camera opened");
 
         // Create Camera Preview and relate it to the camera
         mPreview = new CameraPreview(this);
         mPreview.setCamera(mCamera);
+        Log.i("OnCreate", "camera set preview");
         
         view_camera = (FrameLayout)findViewById(R.id.camera_preview);
         view_camera.addView(mPreview);
@@ -69,6 +73,7 @@ public class RespondActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		Log.d("OnDestroy", "prepare to exit activity");
 		mCamera.release();
 	}
 	
@@ -135,13 +140,8 @@ public class RespondActivity extends Activity {
             	Log.v("OnPreviewCallBack", "got one frame to transmit");
                 Camera.Parameters parameters = mCamera.getParameters();
                 Camera.Size size = parameters.getPreviewSize();
-//                long time1 = System.currentTimeMillis();
                 YuvImage image = new YuvImage(frame, parameters.getPreviewFormat(), size.width, size.height, null);
-//                long time2 = System.currentTimeMillis();
-//                long elapseTimeYUV = time2 - time1;
                 image.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 60, bufferedOutput);
-//                long time3 = System.currentTimeMillis();
-//                long elapseTimeJPEG =  time3 - time2;
 
                 // now ask streaming thread to send packet
                 // streamingHandler = streamingThread.getHandler();
@@ -149,12 +149,9 @@ public class RespondActivity extends Activity {
                 Bundle data = new Bundle();
                 data.putByteArray("data", bufferedOutput.toByteArray());
                 bufferedOutput.reset();
-//                long time4 = System.currentTimeMillis();
-//                data.putLong("time", time4);
                 msg_out.what = StreamingThread.CODE_SEND_PACKET;
                 msg_out.setData(data);
                 
-//                Log.d("OnPreviewCallBack", "elapse time: " + time1 + ", " + time3);
                 Log.v("OnPreviewCallBack", "sent a message");
                 streamingHandler.sendMessage(msg_out);
                 if (System.currentTimeMillis() - startedTime > 5 * 1000) {
@@ -162,6 +159,8 @@ public class RespondActivity extends Activity {
                 	msg_out = Message.obtain();
                 	msg_out.what = StreamingThread.CODE_SEND_STOP;
                 	streamingHandler.sendMessage(msg_out);
+                	streamingThread = null;
+                	finish();
                 }
             }
         }
@@ -169,28 +168,32 @@ public class RespondActivity extends Activity {
 	
 	private void takeVideoWithCameraAPI() throws IOException {
 		
+		Log.i("takeVideoWithCameraAPI", "Starting to record");
         try {
             mCamera.setPreviewDisplay(mPreview.getHolder());
+            Log.i("takeVideoWithCameraAPI", "Setted preview display");
         } catch (IOException e) {
             Log.e("takeVideoWithCameraAPI", "Error in setting preview display: " + e.getMessage());
         }
         
         mCamera.startPreview();
+        Log.i("takeVideoWithCameraAPI", "Started preview");
         
-		if (cameraRecorder == null){
-            cameraRecorder = new CameraRecordingThread();
-            Log.i("takeVideoWithCameraAPI", "Created a new camera recording thread");
-        }
-        
-        cameraRecorder.setCamera(mCamera);
-        cameraRecorder.setPreviewSurface(mPreview.getHolder().getSurface());
+//		if (cameraRecorder == null){
+//            cameraRecorder = new CameraRecordingThread();
+//            Log.i("takeVideoWithCameraAPI", "Created a new camera recording thread");
+//        }
+//        
+//        cameraRecorder.setCamera(mCamera);
+//        cameraRecorder.setPreviewSurface(mPreview.getHolder().getSurface());
         
         mPreview.setPreviewCallback(previewCallback);
+        Log.i("takeVideoWithCameraAPI", "Added preview callback");
         
         //cameraRecorder.start();//run() in a new thread
         
         if (streamingThread == null)
-            streamingThread = new StreamingThread(1, cameraRecorder.getOutputFileDescriptor(), "128.2.213.25", 7950);
+            streamingThread = new StreamingThread(1, "128.2.213.25", 7950);
         
         streamingThread.start();
         Log.i("takeVideoWithCameraAPI", "StreamingThread starts");
@@ -418,4 +421,19 @@ public class RespondActivity extends Activity {
 		sendVideoToServer();
 	}
 	
+	@Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            if (controlThread != null) {
+//                Message msg_out = Message.obtain();
+//                msg_out.what = ControlThread.CODE_CLOSE_CONNECTION;
+//                controlHandler.sendMessage(msg_out);
+//            }                
+		    	
+            finish();
+            return true;
+        }
+		    
+        return super.onKeyDown(keyCode, event);
+    }
 }
