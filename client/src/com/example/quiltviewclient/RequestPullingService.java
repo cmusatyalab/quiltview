@@ -56,8 +56,16 @@ public class RequestPullingService extends IntentService {
 	    private static final int PullRequestLimit = 10;
 	    private static final boolean InfiniteLoop = true;
 	    private static final int PretendReceivingRequest = 3;
+	    
+	    private String mSerialNumber = null;  
+	    
 	    @Override
 	    protected void onHandleIntent(Intent intent) {
+	    	//String macAddr = null;
+	    	//Log.i(LOG_TAG, "Got mac address: " + macAddr);
+	    	mSerialNumber = android.os.Build.SERIAL;
+	    	Log.i(LOG_TAG, "Got serial number: " + mSerialNumber);
+	    	
 	    	Log.i(LOG_TAG, "Handling new intent.");
 	        
 	        int count = 0;
@@ -177,8 +185,9 @@ public class RequestPullingService extends IntentService {
 		    
 		    HttpURLConnection urlConnection = null;
 		    try {
-			    URL url = new URL("http://typhoon.elijah.cs.cmu.edu:8000/quiltview/latest/?user_id=1&"
-			    		+ "lat=" + latitude + "&lng=" + longitude);
+			    URL url = new URL("http://typhoon.elijah.cs.cmu.edu:8000/quiltview/latest/"
+			    		+ "?user_id=" + mSerialNumber 
+			    		+ "&lat=" + latitude + "&lng=" + longitude);
 			    urlConnection = (HttpURLConnection) url.openConnection();
 		        urlConnection.setRequestMethod("GET");
 		        urlConnection.setRequestProperty("Content-Type", "application/json");
