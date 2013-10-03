@@ -117,13 +117,14 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django_browserid',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'quiltview_query',
@@ -161,5 +162,40 @@ LOGGING = {
     }
 }
 
+# Add the django_browserid authentication backend.
+AUTHENTICATION_BACKENDS = (
+   # ...
+   'django.contrib.auth.backends.ModelBackend', # required for admin
+   'django_browserid.auth.BrowserIDBackend',
+   # ...
+)
+
+# Add the django_browserid context processor.
+TEMPLATE_CONTEXT_PROCESSORS = (
+   'django_browserid.context_processors.browserid_form',
+   'django.contrib.auth.context_processors.auth',
+)
+
+# Set your site url for security
+SITE_URL = 'http://localhost:8000'
+BROWSERID_CREATE_USER = True
+
+# Path to redirect to on successful login.
+LOGIN_REDIRECT_URL = '/'
+
+# Path to redirect to on unsuccessful login attempt.
+LOGIN_REDIRECT_URL_FAILURE = '/'
+
+# Path to redirect to on logout.
+LOGOUT_REDIRECT_URL = '/'
+
+#SESSION_COOKIE_SECURE = False
+
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#        'LOCATION': 'unique-snowflake'
+#    }
+#}
 
 API_LIMIT_PER_PAGE = 50

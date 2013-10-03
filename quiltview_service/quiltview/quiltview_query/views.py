@@ -1,18 +1,24 @@
 from quiltview_query.models import User, Query, Video, Prompt
 
 import json
+import requests
+import datetime
 
 # rendering
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
-import datetime
+from django.contrib.auth import logout
 
 import location
 
 def index(request):
-    return render_to_response('quiltview/index.html', {}, RequestContext(request))
+    return render_to_response('quiltview/query.html', {}, RequestContext(request))
+
+def logout_view(request):
+    logout(request)
+    return render_to_response('quiltview/query.html', {}, RequestContext(request))
 
 def query(request):
     req_query_content = request.GET['query_content']
@@ -33,9 +39,9 @@ def query(request):
         # insert a new query
         user = User.objects.all()[0]   # tempory user...
         query = Query(content = "%s at %s?" % (req_query_content, req_query_location),
-                      requester = user, 
-                      interest_location_lat = lat, 
-                      interest_location_long = lng, 
+                      requester = user,
+                      interest_location_lat = lat,
+                      interest_location_long = lng,
                       requested_time = timezone.now()
                      )
         if req_time_out_n:
@@ -59,11 +65,11 @@ def query(request):
             # prepare parameters to reload
             parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True" % (req_query_content, 
                 req_query_location, req_time_out_n, req_accepted_staleness_n, req_reward)
-            return render_to_response('quiltview/index.html',
+            return render_to_response('quiltview/query.html',
                 {'query':matched_query, 'is_cache':True, 'parameter':parameter_string,
                 }, RequestContext(request))
         else:     # not cached or reloaded
-            return render_to_response('quiltview/index.html',
+            return render_to_response('quiltview/query.html',
                 {'query':query, 'is_post':True,
                 }, RequestContext(request))
     else:
@@ -73,7 +79,7 @@ def query(request):
         if queries.count > 10:
             queries = queries[:10]
 
-        return render_to_response('quiltview/index.html',
+        return render_to_response('quiltview/query.html',
             {'queries':queries, 'query_count':query_count, 'is_check':True,
             }, RequestContext(request))
 
