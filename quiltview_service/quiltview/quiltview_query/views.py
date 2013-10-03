@@ -19,10 +19,10 @@ def query(request):
     req_query_location = request.GET['query_location']
     req_time_out_n = request.GET['time_out_n']
     if req_time_out_n:
-        req_time_out = req_time_out_n * 60
+        req_time_out = int(req_time_out_n) * 60
     req_accepted_staleness_n = request.GET['accepted_staleness_n']
     if req_accepted_staleness_n:
-        req_accepted_staleness = req_accepted_staleness_n * 60
+        req_accepted_staleness = int(req_accepted_staleness_n) * 60
     req_reward = request.GET['reward']
 
 
@@ -90,19 +90,29 @@ def latest(request):
     req_user_id = request.GET['user_id']
     req_user_lat = request.GET['lat']
     req_user_lng = request.GET['lng']
-    latest_query = Query.objects.latest('requested_time')
-    user = User.objects.get(id = req_user_id)
+
+    response_data = {}
+
+    user = User.objects.get(uuid = req_user_id)
     user.location_lat = req_user_lat
     user.location_long = req_user_lng
     user.location_update_time = timezone.now()
     user.save()
+    
+    if Query.objects.count() == 0:  #empty query database
+        response_data = json.dumps(response_data)
+        response = HttpResponse(response_data, content_type="application/json")
+        response['Content-Length'] = len(response_data)
+        return response
+
+    latest_query = Query.objects.latest('requested_time')
 
     # check prompts
-    prompts = Prompt.objects.filter(user_id = req_user_id).filter(query_id = latest_query.id)
+    prompts = Prompt.objects.filter(user_id = user.id).filter(query_id = latest_query.id)
 
     response_data = {}
     if prompts.count() == 0 and (not (latest_query.cache_hit and (not latest_query.reload_query))):
-        prompt = Prompt(user = User.objects.get(id = req_user_id),
+        prompt = Prompt(user = user,
                         query = latest_query,
                         requested_time = latest_query.requested_time,
                         user_location_lat = user.location_lat,

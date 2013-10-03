@@ -17,6 +17,7 @@ class User(models.Model):
 
     # user
     google_account = models.CharField(max_length = 100, null=False, blank=False)
+    uuid = models.CharField(max_length = 50, null=False, blank=False)
     reputation = models.IntegerField(default = 90)
     credit = models.IntegerField(default = 3)
 
