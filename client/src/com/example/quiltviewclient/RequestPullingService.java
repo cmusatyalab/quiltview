@@ -176,8 +176,8 @@ public class RequestPullingService extends IntentService {
 		    } else {
 		    	//TODO test real location, delete fake one
 		    	Log.i(LOG_TAG, "Fake Location");
-		    	latitude = 40.44416720;
-		    	longitude = -79.94336060;
+		    	latitude = 40.443469; //40.44416720;
+		    	longitude = -79.943862; //-79.94336060;
 		    }
 		    
 		    	Log.i(LOG_TAG, "Location: " + latitude 

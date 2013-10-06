@@ -4,9 +4,6 @@ import json
 import requests
 import datetime
 
-from django_browserid import get_audience, verify
-from django_browserid.forms import BrowserIDForm
-
 # rendering
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -42,14 +39,17 @@ def query(request):
             return render_to_response('quiltview/query.html', {'is_login_error':True}, RequestContext(request))
 
         # get lat and lng of the given location
-        (lat, lng) = location.getLocationFromAddress(req_query_location)
+        #(lat, lng) = location.getLocationFromAddress(req_query_location)
+        (lat, lng, s_lat, s_lng) = location.getLocationFromLink(req_query_location)
 
         # insert a new query
         user = User.objects.get(google_account = user_email)
-        query = Query(content = "%s at %s?" % (req_query_content, req_query_location),
+        query = Query(content = "%s" % (req_query_content),
                       requester = user,
                       interest_location_lat = lat,
-                      interest_location_long = lng,
+                      interest_location_lng = lng,
+                      interest_location_span_lat = s_lat,
+                      interest_location_span_lng = s_lng,
                       requested_time = timezone.now()
                      )
         if req_time_out_n:
@@ -58,7 +58,8 @@ def query(request):
             query.accepted_staleness = req_accepted_staleness
 
         # check cache
-        matched_queries = Query.objects.filter(content = "%s at %s?" % (req_query_content, req_query_location)).filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))
+        matched_queries = Query.objects.filter(content = "%s" % (req_query_content)).filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))\
+                                       .filter(interest_location_lat = lat).filter(interest_location_lng = lng).filter(interest_location_span_lat = s_lat).filter(interest_location_span_lng = s_lng)
         if matched_queries.count() > 0:   # cache hit
             query.cache_hit = True
             matched_query = matched_queries.latest('requested_time')
@@ -71,8 +72,9 @@ def query(request):
         if query.cache_hit and (not query.reload_query):    # cache hit
             print "Cache hit!!!"
             # prepare parameters to reload
-            parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True" % (req_query_content, 
-                req_query_location, req_time_out_n, req_accepted_staleness_n, req_reward)
+            req_query_location_GET = req_query_location.replace(':', '%3A').replace('/', '%2F').replace('?', '%3F').replace('=', '%3D').replace('+', '%2B').replace(',', '%2C').replace('&', '%26')
+            parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True&user_email=%s" % (req_query_content, 
+                req_query_location_GET, req_time_out_n, req_accepted_staleness_n, req_reward, user_email)
             return render_to_response('quiltview/query.html',
                 {'query':matched_query, 'is_cache':True, 'parameter':parameter_string,
                 }, RequestContext(request))
@@ -109,8 +111,8 @@ def latest(request):
     response_data = {}
 
     user = User.objects.get(uuid = req_user_id)
-    user.location_lat = req_user_lat
-    user.location_long = req_user_lng
+    user.location_lat = float(req_user_lat)
+    user.location_lng = float(req_user_lng)
     user.location_update_time = timezone.now()
     user.save()
     
@@ -122,16 +124,18 @@ def latest(request):
 
     latest_query = Query.objects.latest('requested_time')
 
-    # check prompts
     prompts = Prompt.objects.filter(user_id = user.id).filter(query_id = latest_query.id)
 
     response_data = {}
-    if prompts.count() == 0 and (not (latest_query.cache_hit and (not latest_query.reload_query))):
+    # check prompts, cache and location
+    if prompts.count() == 0 and \
+          (not (latest_query.cache_hit and (not latest_query.reload_query))) and \
+          location.within_range(latest_query, user): # check location
         prompt = Prompt(user = user,
                         query = latest_query,
                         requested_time = latest_query.requested_time,
                         user_location_lat = user.location_lat,
-                        user_location_long = user.location_long,
+                        user_location_lng = user.location_lng,
                         action = 'W',
                        )
         prompt.save()

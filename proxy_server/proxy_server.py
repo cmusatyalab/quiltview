@@ -99,7 +99,7 @@ def startServer(host, port, buf, options):
                            "owner" : "/api/dm/user/%d/" % user_ID, 
                            "query" : "/api/dm/query/%d/" % query_ID, 
                            "upload_location_lat" : "11.111111", 
-                           "upload_location_long" : "22.2222"
+                           "upload_location_lng" : "22.2222"
                           }  # some fields are random for now
         post_video.post(QUILTVIEW_URL, VIDEO_RESOURCE, new_video_entry)
 

@@ -39,7 +39,7 @@
           <div class="span6">
             <input type="text" name="query_content" placeholder="e.g. What is the weather">
             at      
-            <input type="text" name="query_location" placeholder="Pittsburgh">
+            <input type="text" name="query_location" placeholder="put your Google Maps link here">
             ?
           </div>
         </div>
@@ -91,7 +91,7 @@
     {% if is_post %}
       <hr>
       Your query "{{ query.content }}" has been sent. <br>
-      Location has been identified as ({{ query.interest_location_lat }}, {{ query.interest_location_long }})
+      Location has been identified as ({{ query.interest_location_lat }}, {{ query.interest_location_lng }})
       
     {% endif %}
 
@@ -111,7 +111,7 @@
       </p>
     {% load tz %}
         {% for query in queries %}
-          {{ query.content }} (posted at {{ query.requested_time }} by {{ query.requester.google_account }})  <a href="/response?query_id={{ query.id }}">view responses</a> 
+          {{ query.content }} at ({{ query.interest_location_lat }}, {{ query.interest_location_lng }})? (posted at {{ query.requested_time }} by {{ query.requester.google_account }})  <a href="/response?query_id={{ query.id }}">view responses</a> 
           <br>
         {% endfor %}
     {% endif %}

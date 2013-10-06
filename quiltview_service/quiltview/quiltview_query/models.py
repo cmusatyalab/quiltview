@@ -12,7 +12,7 @@ class User(models.Model):
     )
     context = models.CharField(max_length = 2, choices = CONTEXT_CHOICES, default = 'ID')
     location_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
-    location_long = models.DecimalField(max_digits = 12, decimal_places = 8)
+    location_lng = models.DecimalField(max_digits = 12, decimal_places = 8)
     location_update_time = models.DateTimeField(default = timezone.now())
 
     # user
@@ -48,7 +48,9 @@ class Query(models.Model):
     # TODO: this is not updated now...
     latest_upload_time = models.DateTimeField(null=True, blank=True)
     interest_location_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
-    interest_location_long = models.DecimalField(max_digits = 12, decimal_places = 8)
+    interest_location_lng = models.DecimalField(max_digits = 12, decimal_places = 8)
+    interest_location_span_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
+    interest_location_span_lng = models.DecimalField(max_digits = 12, decimal_places = 8)
 
     # users
     requester = models.ForeignKey(User)
@@ -78,7 +80,7 @@ class Video(models.Model):
     url = models.CharField(max_length = 100)
     upload_time = models.DateTimeField(default = timezone.now())
     upload_location_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
-    upload_location_long = models.DecimalField(max_digits = 12, decimal_places = 8)
+    upload_location_lng = models.DecimalField(max_digits = 12, decimal_places = 8)
 
     def __unicode__(self):
         return self.url
@@ -98,7 +100,7 @@ class Prompt(models.Model):
     requested_time = models.DateTimeField()
     responded_time = models.DateTimeField(null=True, blank=True)
     user_location_lat = models.DecimalField(max_digits = 12, decimal_places = 8)
-    user_location_long = models.DecimalField(max_digits = 12, decimal_places = 8)
+    user_location_lng = models.DecimalField(max_digits = 12, decimal_places = 8)
     ACTION_CHOICES = (
         ('Y', 'Replied'),
         ('N', 'Rejected'),
