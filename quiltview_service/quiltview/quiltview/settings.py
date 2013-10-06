@@ -72,7 +72,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/zhuoc/Workspace/quiltview/quiltview_service/quiltview/STATIC_DIRS',
+    #'/home/zhuoc/Workspace/quiltview/quiltview_service/quiltview/STATIC_DIRS',
+    '/home/ubuntu/quiltview/quiltview_service/quiltview/STATIC_DIRS',
 )
 
 # List of finder classes that know how to find static files in
@@ -112,7 +113,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/zhuoc/Workspace/quiltview/quiltview_service/quiltview/templates',
+    #'/home/zhuoc/Workspace/quiltview/quiltview_service/quiltview/templates',
+    '/home/ubuntu/quiltview/quiltview_service/quiltview/templates',
 )
 
 INSTALLED_APPS = (
@@ -177,7 +179,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 # Set your site url for security
-SITE_URL = 'http://typhoon.elijah.cs.cmu.edu:8000'
+#SITE_URL = 'http://typhoon.elijah.cs.cmu.edu:8000'
+SITE_URL = 'http://quiltview.opencloudlet.org:8000'
 BROWSERID_CREATE_USER = True
 
 # Path to redirect to on successful login.

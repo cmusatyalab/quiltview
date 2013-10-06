@@ -3,5 +3,3 @@ libmysqlclient-dev (otherwise cannot pip install mysql-python)
 python-dev
 #python-xmpp
 python-gflags
-
-django
