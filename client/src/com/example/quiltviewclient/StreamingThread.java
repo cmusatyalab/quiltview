@@ -31,6 +31,7 @@ public class StreamingThread extends Thread {
     public static final int CODE_SEND_QUERY_ID = 1;
     public static final int CODE_SEND_CONTENT = 2;
     public static final int CODE_SEND_STOP = 3;
+    public static final int CODE_SEND_USER_ID = 4;
     
     private Handler mHandler;
     
@@ -110,6 +111,19 @@ public class StreamingThread extends Thread {
 //            int packet_count = 0;
             
             public void handleMessage(Message msg_in) {
+            	if (msg_in.what == CODE_SEND_USER_ID) {
+            		Log.d(LOG_TAG, "Received user ID");
+            		Bundle data = msg_in.getData();
+                    int user_ID = data.getInt("user_ID");
+                    Log.v(LOG_TAG, "Got user ID:" + user_ID);
+                    byte[] userID = pack(user_ID);
+            		try {
+						outStream.write(userID);
+					} catch (IOException e) {
+						Log.e("sendVideo", "Socket Problem: " + e.toString());
+					}
+            		Log.i(LOG_TAG, "User ID sent");
+            	}
             	if (msg_in.what == CODE_SEND_QUERY_ID) {
             		Log.d(LOG_TAG, "Received query ID");
             		Bundle data = msg_in.getData();

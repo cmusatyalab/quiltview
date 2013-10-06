@@ -88,11 +88,13 @@ public class RequestPullingService extends IntentService {
 	    
 	    public static final String RESPOND_INTENT_QUERY = "com.example.quiltviewclient.respondquery";
 	    public static final String RESPOND_INTENT_QUERY_ID = "com.example.quiltviewclient.respondqueryID";
-	    private void recordForQuery(String query, int queryID) {
+	    public static final String RESPOND_INTENT_USER_ID = "com.example.quiltviewclient.responduserID";
+	    private void recordForQuery(String query, int queryID, int userID) {
         	Intent respondIntent = new Intent(this, RespondActivity.class);
         	respondIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         	respondIntent.putExtra(RESPOND_INTENT_QUERY, query);
         	respondIntent.putExtra(RESPOND_INTENT_QUERY_ID, queryID);
+        	respondIntent.putExtra(RESPOND_INTENT_USER_ID, userID);
         	startActivity(respondIntent);
 
 //	    	NotificationCompat.Builder mBuilder =
@@ -185,7 +187,7 @@ public class RequestPullingService extends IntentService {
 		    
 		    HttpURLConnection urlConnection = null;
 		    try {
-			    URL url = new URL("http://typhoon.elijah.cs.cmu.edu:8000/quiltview/latest/"
+			    URL url = new URL("http://typhoon.elijah.cs.cmu.edu:8000/latest/"
 			    		+ "?user_id=" + mSerialNumber 
 			    		+ "&lat=" + latitude + "&lng=" + longitude);
 			    urlConnection = (HttpURLConnection) url.openConnection();
@@ -211,8 +213,9 @@ public class RequestPullingService extends IntentService {
 		        	  Log.i(LOG_TAG, obj.getClass().toString());
 		        	  String query = obj.get("content").toString();
 		        	  int queryID = Integer.parseInt(obj.get("query_id").toString());
-		        	  Log.i(LOG_TAG, queryID + ": " + query);    
-		        	  recordForQuery(query, queryID);
+		        	  int userID = Integer.parseInt(obj.get("user_id").toString());
+		        	  Log.i(LOG_TAG, userID + ", " + queryID + ": " + query);    
+		        	  recordForQuery(query, queryID, userID);
 		        	} catch (NullPointerException ex) {
 		        		Log.i(LOG_TAG, "No valid query");
 		        	}

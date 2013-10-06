@@ -47,6 +47,9 @@ def startServer(host, port, buf, options):
         print 'Connected by', addr
 
         data = conn.recv(4)
+        user_ID = struct.unpack("!I", data)[0]
+        print "User ID = %d" % user_ID
+        data = conn.recv(4)
         query_ID = struct.unpack("!I", data)[0]
         print "Query ID = %d" % query_ID
         data = conn.recv(4)
@@ -93,7 +96,7 @@ def startServer(host, port, buf, options):
 
         # STEP 3: register new video at QuiltView
         new_video_entry = {"url" : "http://www.youtube.com/watch?v=%s" % video_watch_id, 
-                           "owner" : "/api/dm/user/1/", 
+                           "owner" : "/api/dm/user/%d/" % user_ID, 
                            "query" : "/api/dm/query/%d/" % query_ID, 
                            "upload_location_lat" : "11.111111", 
                            "upload_location_long" : "22.2222"

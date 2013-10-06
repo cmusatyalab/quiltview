@@ -90,10 +90,12 @@ public class RespondActivity extends Activity {
 	
 	String mQuery = null;
 	int mQueryID = -1;
+	int mUserID = -1;
 	private void extractAndDisplayQuery() {
 		Intent queryIntent = getIntent();
 		mQuery = queryIntent.getStringExtra(RequestPullingService.RESPOND_INTENT_QUERY);
 		mQueryID = queryIntent.getIntExtra(RequestPullingService.RESPOND_INTENT_QUERY_ID, -1);
+		mUserID = queryIntent.getIntExtra(RequestPullingService.RESPOND_INTENT_USER_ID, -1);
 		TextView textView = (TextView) findViewById(R.id.status_update);
 		textView.setText(mQueryID + ": " + mQuery);
 	}
@@ -215,9 +217,16 @@ public class RespondActivity extends Activity {
         }
         
         Log.d("takeVideoWithCameraAPI", "Now starting to stream");
-        // send query ID
+        // send user ID
         Message msg_out = Message.obtain();
         Bundle data = new Bundle();
+        data.putInt("user_ID", mUserID);
+        msg_out.what = StreamingThread.CODE_SEND_USER_ID;
+        msg_out.setData(data);
+        streamingHandler.sendMessage(msg_out);
+        // send query ID
+        msg_out = Message.obtain();
+        data = new Bundle();
         data.putInt("query_ID", mQueryID);
         msg_out.what = StreamingThread.CODE_SEND_QUERY_ID;
         msg_out.setData(data);

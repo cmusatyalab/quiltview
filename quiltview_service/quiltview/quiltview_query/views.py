@@ -4,6 +4,9 @@ import json
 import requests
 import datetime
 
+from django_browserid import get_audience, verify
+from django_browserid.forms import BrowserIDForm
+
 # rendering
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -18,7 +21,7 @@ def index(request):
 
 def logout_view(request):
     logout(request)
-    return render_to_response('quiltview/query.html', {}, RequestContext(request))
+    #return render_to_response('quiltview/query.html', {}, RequestContext(request))
 
 def query(request):
     req_query_content = request.GET['query_content']
@@ -33,11 +36,16 @@ def query(request):
 
 
     if request.GET['post']=="True":  # add a new query
+        # check if the user has logged in
+        user_email = request.GET['user_email']
+        if not user_email:
+            return render_to_response('quiltview/query.html', {'is_login_error':True}, RequestContext(request))
+
         # get lat and lng of the given location
         (lat, lng) = location.getLocationFromAddress(req_query_location)
 
         # insert a new query
-        user = User.objects.all()[0]   # tempory user...
+        user = User.objects.get(google_account = user_email)
         query = Query(content = "%s at %s?" % (req_query_content, req_query_location),
                       requester = user,
                       interest_location_lat = lat,
@@ -94,6 +102,7 @@ def response(request):
 
 def latest(request):
     req_user_id = request.GET['user_id']
+    #print req_user_id
     req_user_lat = request.GET['lat']
     req_user_lng = request.GET['lng']
 
@@ -127,6 +136,7 @@ def latest(request):
                        )
         prompt.save()
 
+        response_data['user_id'] = user.id
         response_data['content'] = latest_query.content
         response_data['query_id'] = latest_query.id
     else:

@@ -27,6 +27,7 @@
     </header>
     <form action="/query" method="get">
     {% csrf_token %}
+      <input type="hidden" name="user_email" value="{{ user.email }}" />
       <div>
         <div class="row-fluid">
           <div class="span3">
@@ -82,6 +83,11 @@
       </p>
     </form>
 
+    {% if is_login_error %}
+      <hr>
+      Login error: You have to sign in before posting a query.
+    {% endif %}
+
     {% if is_post %}
       <hr>
       Your query "{{ query.content }}" has been sent. <br>
@@ -105,7 +111,7 @@
       </p>
     {% load tz %}
         {% for query in queries %}
-          {{ query.content }} (posted at {{ query.requested_time }})  <a href="/response?query_id={{ query.id }}">view responses</a> 
+          {{ query.content }} (posted at {{ query.requested_time }} by {{ query.requester.google_account }})  <a href="/response?query_id={{ query.id }}">view responses</a> 
           <br>
         {% endfor %}
     {% endif %}
