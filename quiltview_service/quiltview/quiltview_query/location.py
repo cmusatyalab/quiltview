@@ -40,8 +40,8 @@ def within_range(request, user):
        user.location_lng > lng_min and user.location_lng < lng_max:
         return True
     else:
-        print (lat_min, lat_max, user.location_lat)
-        print (lng_min, lng_max, user.location_lng)
+        #print (lat_min, lat_max, user.location_lat)
+        #print (lng_min, lng_max, user.location_lng)
         return False
 
 if __name__ == "__main__":
