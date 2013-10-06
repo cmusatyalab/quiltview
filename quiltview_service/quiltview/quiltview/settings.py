@@ -180,7 +180,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Set your site url for security
 #SITE_URL = 'http://typhoon.elijah.cs.cmu.edu:8000'
-SITE_URL = 'http://quiltview.opencloudlet.org:8000'
+SITE_URL = 'http://quiltview.opencloudlet.org:80'
 BROWSERID_CREATE_USER = True
 
 # Path to redirect to on successful login.
