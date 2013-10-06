@@ -173,6 +173,8 @@ public class RespondActivity extends Activity {
     };
 	
 	private void takeVideoWithCameraAPI() throws IOException {
+		TextView textView = (TextView) findViewById(R.id.status_update);
+		textView.setText("Recording: " + mQuery);
 		
 		Log.i("takeVideoWithCameraAPI", "Starting to record");
         try {
