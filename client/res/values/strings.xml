@@ -3,7 +3,7 @@
 
     <string name="app_name">QuiltView</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">Hello QuiltView!</string>
     <string name="button_record">Record</string>
     <string name="button_respond">Respond</string>
     <string name="button_pull">Pull</string>
