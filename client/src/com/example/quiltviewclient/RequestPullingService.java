@@ -184,11 +184,10 @@ public class RequestPullingService extends IntentService {
 		    			+ ", " + longitude);
 		    //TODO Send location with pull request
 		    
-		    
 		    HttpURLConnection urlConnection = null;
 		    try {
 //			    URL url = new URL("http://typhoon.elijah.cs.cmu.edu:8000/latest/"
-			    URL url = new URL("http://quiltview.opencloudlet.org:80/latest/"
+			    URL url = new URL("https://quiltview.opencloudlet.org/latest/"
 			    		+ "?user_id=" + mSerialNumber 
 			    		+ "&lat=" + latitude + "&lng=" + longitude);
 			    urlConnection = (HttpURLConnection) url.openConnection();

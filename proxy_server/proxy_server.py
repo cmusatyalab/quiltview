@@ -13,7 +13,7 @@ import post_video
 TMP_VIDEO_NAME = "uploaded_video.avi"
 
 #QUILTVIEW_URL = "http://typhoon.elijah.cs.cmu.edu:8000"
-QUILTVIEW_URL = "http://quiltview.opencloudlet.org:80"
+QUILTVIEW_URL = "https://quiltview.opencloudlet.org"
 VIDEO_RESOURCE = "/api/dm/video/"
 
 def processFrame(data):
