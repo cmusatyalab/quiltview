@@ -12,13 +12,13 @@ from django.utils import timezone
 from django.contrib.auth import logout
 
 import location
+from text_similarity import similarity, learn_dictionary
 
 def index(request):
     return render_to_response('quiltview/query.html', {}, RequestContext(request))
 
 def logout_view(request):
     logout(request)
-    #return render_to_response('quiltview/query.html', {}, RequestContext(request))
 
 def query(request):
     req_query_content = request.GET['query_content']
@@ -57,12 +57,21 @@ def query(request):
         if req_accepted_staleness_n:
             query.accepted_staleness = req_accepted_staleness
 
-        # check cache
-        matched_queries = Query.objects.filter(content = "%s" % (req_query_content)).filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))\
+        # check cache based on time
+        matched_queries = Query.objects.filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))\
                                        .filter(interest_location_lat = lat).filter(interest_location_lng = lng).filter(interest_location_span_lat = s_lat).filter(interest_location_span_lng = s_lng)
-        if matched_queries.count() > 0:   # cache hit
+        # detect similarity
+        new_documents = []
+        for matched_query in matched_queries.all():
+            new_documents.append(matched_query.content)
+        learn_dictionary.learn(new_documents)
+        closest_query_idxes = similarity.find_closest(query.content)
+        closest_queries = []
+        for idx in closest_query_idxes:
+            closest_queries.append(matched_queries[idx])
+
+        if len(closest_queries) > 0:   # cache hit
             query.cache_hit = True
-            matched_query = matched_queries.latest('requested_time')
             req_reload = request.GET.get('reload', 'False')
             if req_reload == "True":
                 query.reload_query = True
@@ -76,7 +85,7 @@ def query(request):
             parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True&user_email=%s" % (req_query_content, 
                 req_query_location_GET, req_time_out_n, req_accepted_staleness_n, req_reward, user_email)
             return render_to_response('quiltview/query.html',
-                {'query':matched_query, 'is_cache':True, 'parameter':parameter_string,
+                {'queries':closest_queries, 'is_cache':True, 'parameter':parameter_string,
                 }, RequestContext(request))
         else:     # not cached or reloaded
             return render_to_response('quiltview/query.html',
