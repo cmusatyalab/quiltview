@@ -100,7 +100,7 @@
       <p>
         We have found similar queries in our system. You can view responses of these matched queries through the following links<br>
         {% for query in queries %}
-            "{{ query.content }}" <a href="/response?query_id={{ query.id }}">view responses</a> <br>
+            "{{ query.content }}" (posted at {{ query.requested_time }} by {{ query.requester.google_account }}) <a href="/response?query_id={{ query.id }}">view responses</a> <br>
         {% endfor %}
         You can also <a href="/query?{{ parameter }}">reload here</a>
       </p>
