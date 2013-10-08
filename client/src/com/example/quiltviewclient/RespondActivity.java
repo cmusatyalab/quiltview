@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -68,6 +69,7 @@ public class RespondActivity extends Activity {
         Log.i("OnCreate", "camera set preview");
         
         view_camera = (FrameLayout)findViewById(R.id.camera_preview);
+        view_camera.setVisibility(View.INVISIBLE);
         view_camera.addView(mPreview);
 
         extractAndDisplayQuery();
@@ -173,8 +175,10 @@ public class RespondActivity extends Activity {
     };
 	
 	private void takeVideoWithCameraAPI() throws IOException {
+		Button record_button = (Button) findViewById(R.id.record_button);
+		view_camera.setVisibility(View.VISIBLE);
 		TextView textView = (TextView) findViewById(R.id.status_update);
-		textView.setText("Recording: " + mQuery);
+		textView.setText("Recording...");
 		
 		Log.i("takeVideoWithCameraAPI", "Starting to record");
         try {
@@ -243,6 +247,7 @@ public class RespondActivity extends Activity {
         
         startedTime = System.currentTimeMillis();
         hasStarted = true;
+//        record_button.setVisibility(View.GONE);
         
 //        try
 //        {
