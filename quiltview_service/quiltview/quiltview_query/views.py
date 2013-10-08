@@ -65,7 +65,7 @@ def query(request):
         for matched_query in matched_queries.all():
             new_documents.append(matched_query.content)
         learn_dictionary.learn(new_documents)
-        closest_query_idxes = similarity.find_closest(query.content)
+        closest_query_idxes = similarity.find_closest(query.content, len(new_documents))
         closest_queries = []
         for idx in closest_query_idxes:
             closest_queries.append(matched_queries[idx])

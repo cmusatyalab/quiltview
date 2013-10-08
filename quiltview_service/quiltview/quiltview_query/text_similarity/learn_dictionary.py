@@ -4,7 +4,7 @@ from pprint import pprint
 import sys
 
 def learn(new_documents):
-    with open("documents") as f:
+    with open("/home/ubuntu/quiltview/quiltview_service/quiltview/quiltview_query/text_similarity/documents") as f:
         documents = f.readlines()
     documents = new_documents + documents
 
