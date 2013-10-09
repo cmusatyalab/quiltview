@@ -40,8 +40,17 @@ def within_range(request, user):
        user.location_lng > lng_min and user.location_lng < lng_max:
         return True
     else:
-        #print (lat_min, lat_max, user.location_lat)
-        #print (lng_min, lng_max, user.location_lng)
+        return False
+
+def overlap(request1, request2):
+    lat_min = request1.interest_location_lat - request1.interest_location_span_lat
+    lat_max = request1.interest_location_lat + request1.interest_location_span_lat
+    lng_min = request1.interest_location_lng - request1.interest_location_span_lng
+    lng_max = request1.interest_location_lng + request1.interest_location_span_lng
+    if request2.interest_location_lat > lat_min and request2.interest_location_lat < lat_max and \
+       request2.interest_location_lng > lng_min and request2.interest_location_lng < lng_max:
+        return True
+    else:
         return False
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ from quiltview_query.models import User, Query, Video, Prompt
 import json
 import requests
 import datetime
+import random
 
 # rendering
 from django.template import RequestContext
@@ -14,6 +15,8 @@ from django.contrib.auth import logout
 import location
 from text_similarity import similarity, learn_dictionary
 
+users_to_deliver = []
+
 def index(request):
     return render_to_response('quiltview/query.html', {}, RequestContext(request))
 
@@ -21,6 +24,24 @@ def logout_view(request):
     logout(request)
 
 def query(request):
+    def calc_users_deliver():
+        users = User.objects.filter(location_lat__gte = query.interest_location_lat - query.interest_location_span_lat)\
+                            .filter(location_lat__lte = query.interest_location_lat + query.interest_location_span_lat)\
+                            .filter(location_lng__gte = query.interest_location_lng - query.interest_location_span_lng)\
+                            .filter(location_lng__lte = query.interest_location_lng + query.interest_location_span_lng)\
+                            .filter(location_update_time__gte = timezone.now() - datetime.timedelta(seconds = 5 * 60))
+        if users.count() > 3:
+            x = range(users.count())
+            random.shuffle(x)
+            users_to_deliver = []
+            for idx in xrange(3):
+                users_to_deliver.append(users[x[idx]].id)
+        else:
+            users_to_deliver = [user.id for user in users]
+        return users_to_deliver
+        
+    global users_to_deliver
+
     req_query_content = request.GET['query_content']
     req_query_location = request.GET['query_location']
     req_time_out_n = request.GET['time_out_n']
@@ -68,14 +89,14 @@ def query(request):
         closest_query_idxes = similarity.find_closest(query.content, len(new_documents))
         closest_queries = []
         for idx in closest_query_idxes:
-            closest_queries.append(matched_queries[idx])
+            if location.overlap(matched_queries[idx], query):
+                closest_queries.append(matched_queries[idx])
 
         if len(closest_queries) > 0:   # cache hit
             query.cache_hit = True
             req_reload = request.GET.get('reload', 'False')
             if req_reload == "True":
                 query.reload_query = True
-
         query.save()
 
         if query.cache_hit and (not query.reload_query):    # cache hit
@@ -88,6 +109,8 @@ def query(request):
                 {'queries':closest_queries, 'is_cache':True, 'parameter':parameter_string,
                 }, RequestContext(request))
         else:     # not cached or reloaded
+            # calculate a pool of users that should deliver the message
+            users_to_deliver = calc_users_deliver()
             return render_to_response('quiltview/query.html',
                 {'query':query, 'is_post':True,
                 }, RequestContext(request))
@@ -112,6 +135,9 @@ def response(request):
         }, RequestContext(request))
 
 def latest(request):
+    global users_to_deliver
+    print users_to_deliver
+
     req_user_id = request.GET['user_id']
     #print req_user_id
     req_user_lat = request.GET['lat']
@@ -139,7 +165,7 @@ def latest(request):
     # check prompts, cache and location
     if prompts.count() == 0 and \
           (not (latest_query.cache_hit and (not latest_query.reload_query))) and \
-          location.within_range(latest_query, user): # check location
+          user.id in users_to_deliver:
         prompt = Prompt(user = user,
                         query = latest_query,
                         requested_time = latest_query.requested_time,

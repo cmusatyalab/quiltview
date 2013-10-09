@@ -186,21 +186,22 @@ BROWSERID_CREATE_USER = True
 #BROWSERID_DISABLE_CERT_CHECK = True
 
 # Path to redirect to on successful login.
-LOGIN_REDIRECT_URL = 'https://quiltview.opencloudlet.org'
+LOGIN_REDIRECT_URL = 'http://quiltview.opencloudlet.org'
+#LOGIN_REDIRECT_URL = 'https://quiltview.opencloudlet.org'  # this is for https (SSL)
 
 # Path to redirect to on unsuccessful login attempt.
-LOGIN_REDIRECT_URL_FAILURE = 'http://quiltview.opencloudlet.org/aaa'
+LOGIN_REDIRECT_URL_FAILURE = 'http://quiltview.opencloudlet.org/fake'
 
 # Path to redirect to on logout.
 LOGOUT_REDIRECT_URL = 'http://quiltview.opencloudlet.org'
 
 SESSION_COOKIE_SECURE = False
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake'
-    }
-}
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#        'LOCATION': 'unique-snowflake'
+#    }
+#}
 
 API_LIMIT_PER_PAGE = 50
