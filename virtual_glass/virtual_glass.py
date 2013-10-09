@@ -15,14 +15,14 @@ VIDEO_RESOURCE = "/api/dm/video/"
 
 class VirtualUser(multiprocessing.Process):
     
-    def __init__(self, uid, lat, lng):
+    def __init__(self, uid, lat, lng, dailyLimit):
         multiprocessing.Process.__init__(self)
         self.uid = "VIRTUAL" + uid
         self.lat = lat
         self.lng = lng
 
         fakeemail = self.uid + "@example.com"
-        self.register(self.uid, fakeemail)
+        self.register(self.uid, fakeemail, dailyLimit)
 
     def run(self):
         proc_name = self.name
@@ -34,9 +34,9 @@ class VirtualUser(multiprocessing.Process):
             #pullcount += 1
         return
 
-    def register(self, uid, uemail) :
+    def register(self, uid, uemail, dailyLimit) :
         print "Register #%s %s" % (uid, uemail)
-        pprint(post_video.post(QUILTVIEW_URL, "/api/dm/user/", {"location_lat":"0", "location_lng":"0", "google_account":uemail, "uuid":uid}))
+        pprint(post_video.post(QUILTVIEW_URL, "/api/dm/user/", {"location_lat":"0", "location_lng":"0", "google_account":uemail, "uuid":uid, "max_upload_time": dailyLimit}))
 
 
     def updateVideo(self, query_content, query_id, user_id) :
@@ -84,43 +84,46 @@ class VirtualUser(multiprocessing.Process):
         print json_result
         #if json_result != "{}" :
         if json_result.__len__() != 0 :
-            query_content = json_result['content'] #TODO
+            query_content = json_result['content'] 
             query_id = json_result['query_id']
             user_id = json_result['user_id']
             print "Got a response. Upload to Youtube"
-            #TODO Upload video to Youtube
+            #Upload video to Youtube
             self.updateVideo(query_content, query_id, user_id)
 
 
 def create():
-    usage = "python virtual_glass.py create <number of users> <google map link>"  
+    usage = "python virtual_glass.py create <number of users> <query limit/day> <google map link>"  
     '''
     <google map link> example
     https://maps.google.com/?ll=40.442758,-79.942338&spn=0.00743,0.015814&t=m&z=17
     '''
-    if len(sys.argv) != 4 :
+    if len(sys.argv) != 5 :
         print usage
         exit(0)
     else :
         nUser = int (sys.argv[2])
-        mapUrl = sys.argv[3]
+        dailyLimit = int (sys.argv[3])
+        mapUrl = sys.argv[4]
 
     from urlparse import urlparse
     from urlparse import parse_qs
     httpQuery = urlparse(mapUrl).query
-    print httpQuery
+    #print httpQuery
     httpQueryDic = parse_qs(httpQuery)
     ll = httpQueryDic["ll"][0].split(",")
     spn = httpQueryDic["spn"][0].split(",")
-    print "ll=" + str(ll)
-    print "spn=" + str(spn)
+    #print "ll=" + str(ll)
+    #print "spn=" + str(spn)
     lat_center = float(ll[0])
     lng_center = float(ll[1])
-    print "lat=%f \t lng=%f" % (lat_center, lng_center)
+    #print "lat=%f \t lng=%f" % (lat_center, lng_center)
 
     lat_spn = float(spn[0])
     lng_spn = float(spn[1])
 
+    print "Creating %d virtual glass users,\n with daily limit of %d queries,\n around (%f, %f) " \
+        % (nUser, dailyLimit, lat_center, lng_center)
     #patchID
     #A time stamp for this patch of virtual glasses
     #To add to userID
@@ -145,7 +148,7 @@ def create():
         print "Starting Virtual User #%s lat=%f \tlng=%f" % (uid, lat_i, lng_i)
         
         #new thread
-        newUser = VirtualUser(uid, lat_i, lng_i)
+        newUser = VirtualUser(uid, lat_i, lng_i, dailyLimit)
         newUser.start()
         f.write( str(lat_i) + "," + str(lng_i) + "," + "VIRTUAL" + uid  + ',,' + str(newUser.pid) + '\n') 
 
@@ -161,7 +164,7 @@ def stopall() :
             if pid != "PID" :
                 print "stopping user %s @PID%s" % (userID, pid)
 
-                #TODO
+                #kill all relevant processes
                 import os
                 import signal
                 os.kill(int(pid), signal.SIGKILL)
