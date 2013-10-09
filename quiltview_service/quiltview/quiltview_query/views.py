@@ -29,7 +29,7 @@ def query(request):
                             .filter(location_lat__lte = query.interest_location_lat + query.interest_location_span_lat)\
                             .filter(location_lng__gte = query.interest_location_lng - query.interest_location_span_lng)\
                             .filter(location_lng__lte = query.interest_location_lng + query.interest_location_span_lng)\
-                            .filter(location_update_time__gte = timezone.now() - datetime.timedelta(seconds = 5 * 60))
+                            .filter(location_update_time__gte = timezone.now() - datetime.timedelta(seconds = 1 * 60))
         if users.count() > 3:
             x = range(users.count())
             random.shuffle(x)

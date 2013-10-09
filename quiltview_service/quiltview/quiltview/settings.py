@@ -61,7 +61,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = '/home/ubuntu/quiltview/quiltview_service/quiltview/STATIC_ROOT'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -180,20 +180,20 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Set your site url for security
 #SITE_URL = 'http://typhoon.elijah.cs.cmu.edu:8000'
-SITE_URL = 'http://quiltview.opencloudlet.org'
+SITE_URL = 'https://quiltview.opencloudlet.org'
 BROWSERID_CREATE_USER = True
 
 #BROWSERID_DISABLE_CERT_CHECK = True
 
 # Path to redirect to on successful login.
-LOGIN_REDIRECT_URL = 'http://quiltview.opencloudlet.org'
+LOGIN_REDIRECT_URL = 'https://quiltview.opencloudlet.org'
 #LOGIN_REDIRECT_URL = 'https://quiltview.opencloudlet.org'  # this is for https (SSL)
 
 # Path to redirect to on unsuccessful login attempt.
-LOGIN_REDIRECT_URL_FAILURE = 'http://quiltview.opencloudlet.org/fake'
+LOGIN_REDIRECT_URL_FAILURE = 'https://quiltview.opencloudlet.org/fake'
 
 # Path to redirect to on logout.
-LOGOUT_REDIRECT_URL = 'http://quiltview.opencloudlet.org'
+LOGOUT_REDIRECT_URL = 'https://quiltview.opencloudlet.org'
 
 SESSION_COOKIE_SECURE = False
 

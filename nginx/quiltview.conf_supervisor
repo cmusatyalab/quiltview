@@ -1,0 +1,8 @@
+[program:quiltview]
+command=/home/ubuntu/quiltview/ENV/bin/gunicorn_django -c /home/ubuntu/quiltview/nginx/gunicorn.conf.py
+exitcodes=
+user=quiltview
+stdout_logfile=AUTO
+stderr_logfile=AUTO
+environment=USER=ubuntu,HOME=/home/ubuntu,PATH=/usr/local/bin:/bin:/usr/bin
+directory=/home/ubuntu/quiltview/quiltview_service/quiltview
