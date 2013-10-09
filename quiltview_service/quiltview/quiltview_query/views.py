@@ -30,14 +30,17 @@ def query(request):
                             .filter(location_lng__gte = query.interest_location_lng - query.interest_location_span_lng)\
                             .filter(location_lng__lte = query.interest_location_lng + query.interest_location_span_lng)\
                             .filter(location_update_time__gte = timezone.now() - datetime.timedelta(seconds = 1 * 60))
-        if users.count() > 3:
-            x = range(users.count())
-            random.shuffle(x)
-            users_to_deliver = []
-            for idx in xrange(3):
+        users_to_deliver = []
+        counter = 0
+        x = range(users.count())
+        random.shuffle(x)
+        for idx in xrange(users.count()):
+            prompts = users[x[idx]].prompt_set.filter(requested_time__gte = timezone.now() - datetime.timedelta(days = 1))
+            if prompts.count() < users[x[idx]].max_upload_time:
                 users_to_deliver.append(users[x[idx]].id)
-        else:
-            users_to_deliver = [user.id for user in users]
+                counter += 1
+                if counter >= 3:
+                    break
         return users_to_deliver
         
     global users_to_deliver
@@ -97,7 +100,6 @@ def query(request):
             req_reload = request.GET.get('reload', 'False')
             if req_reload == "True":
                 query.reload_query = True
-        query.save()
 
         if query.cache_hit and (not query.reload_query):    # cache hit
             print "Cache hit!!!"
@@ -105,12 +107,14 @@ def query(request):
             req_query_location_GET = req_query_location.replace(':', '%3A').replace('/', '%2F').replace('?', '%3F').replace('=', '%3D').replace('+', '%2B').replace(',', '%2C').replace('&', '%26')
             parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True&user_email=%s" % (req_query_content, 
                 req_query_location_GET, req_time_out_n, req_accepted_staleness_n, req_reward, user_email)
+            query.save()
             return render_to_response('quiltview/query.html',
                 {'queries':closest_queries, 'is_cache':True, 'parameter':parameter_string,
                 }, RequestContext(request))
         else:     # not cached or reloaded
             # calculate a pool of users that should deliver the message
             users_to_deliver = calc_users_deliver()
+            query.save()
             return render_to_response('quiltview/query.html',
                 {'query':query, 'is_post':True,
                 }, RequestContext(request))
