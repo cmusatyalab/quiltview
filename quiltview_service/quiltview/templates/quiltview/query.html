@@ -98,9 +98,11 @@
     {% if is_cache %}
       <hr>
       <p>
-        We found a similar query in our system: "{{ query.content }}" <br>
-        You can view responses of the matched query <a href="/response?query_id={{ query.id }}">here</a> <br>
-        Or <a href="/query?{{ parameter }}">reload here</a>
+        We have found similar queries in our system. You can view responses of these matched queries through the following links<br>
+        {% for query in queries %}
+            "{{ query.content }}" (posted at {{ query.requested_time }} by {{ query.requester.google_account }}) <a href="/response?query_id={{ query.id }}">view responses</a> <br>
+        {% endfor %}
+        You can also <a href="/query?{{ parameter }}">reload here</a>
       </p>
     {% endif %}
 

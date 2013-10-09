@@ -180,25 +180,27 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Set your site url for security
 #SITE_URL = 'http://typhoon.elijah.cs.cmu.edu:8000'
-SITE_URL = 'http://quiltview.opencloudlet.org:80'
+SITE_URL = 'http://quiltview.opencloudlet.org'
 BROWSERID_CREATE_USER = True
 
+#BROWSERID_DISABLE_CERT_CHECK = True
+
 # Path to redirect to on successful login.
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'https://quiltview.opencloudlet.org'
 
 # Path to redirect to on unsuccessful login attempt.
-LOGIN_REDIRECT_URL_FAILURE = '/'
+LOGIN_REDIRECT_URL_FAILURE = 'http://quiltview.opencloudlet.org/aaa'
 
 # Path to redirect to on logout.
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = 'http://quiltview.opencloudlet.org'
 
-#SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
-#CACHES = {
-#    'default': {
-#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#        'LOCATION': 'unique-snowflake'
-#    }
-#}
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake'
+    }
+}
 
 API_LIMIT_PER_PAGE = 50
