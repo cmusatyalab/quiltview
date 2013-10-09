@@ -1,4 +1,6 @@
 import requests
+from urlparse import urlparse
+from urlparse import parse_qs
 
 GOOGLE_LOCATION_API = "http://maps.googleapis.com/maps/api/geocode/json"
 
@@ -13,21 +15,19 @@ def getLocationFromAddress(address):
     return (location['lat'], location['lng'])
 
 def getLocationFromLink(link):
+    httpQuery = urlparse(link).query
+    print httpQuery
+    httpQueryDic = parse_qs(httpQuery)
+    ll = httpQueryDic["ll"][0].split(",")
+    spn = httpQueryDic["spn"][0].split(",")
+
     # get center point
-    ll_start = link.find("&ll=") + 4
-    ll_end = link.find("&spn=")
-    ll = link[ll_start : ll_end]
-    lat, lng = ll.split(',')
-    lat = float(lat)
-    lng = float(lng)
+    lat = float(ll[0])
+    lng = float(ll[1])
 
     # get span
-    span_start = ll_end + 5
-    span_end = link.find("&sll=")
-    span = link[span_start : span_end]
-    s_lat, s_lng = span.split(',')
-    s_lat = float(s_lat) / 2
-    s_lng = float(s_lng) / 2
+    s_lat = float(spn[0]) / 2
+    s_lng = float(spn[1]) / 2
 
     return (lat, lng, s_lat, s_lng)
 
