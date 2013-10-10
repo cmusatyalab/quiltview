@@ -1,11 +1,17 @@
 package com.example.quiltviewclient;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
@@ -23,12 +29,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.google.android.gms.plus.model.people.Person.Image;
 import com.google.android.youtube.player.YouTubeIntents;
-
-import com.example.quiltviewclient.StreamingThread;
 
 
 public class RespondActivity extends Activity {
@@ -58,7 +64,9 @@ public class RespondActivity extends Activity {
 	            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 		
 		setContentView(R.layout.activity_respond);
-		
+
+        extractAndDisplayQuery();
+
 		// Create an instance of Camera
         mCamera = Camera.open();
         Log.i("OnCreate", "camera opened");
@@ -72,7 +80,6 @@ public class RespondActivity extends Activity {
         view_camera.setVisibility(View.INVISIBLE);
         view_camera.addView(mPreview);
 
-        extractAndDisplayQuery();
 
 	}
 
@@ -93,13 +100,37 @@ public class RespondActivity extends Activity {
 	String mQuery = null;
 	int mQueryID = -1;
 	int mUserID = -1;
+	String mQueryImagePath = null;
 	private void extractAndDisplayQuery() {
 		Intent queryIntent = getIntent();
 		mQuery = queryIntent.getStringExtra(RequestPullingService.RESPOND_INTENT_QUERY);
 		mQueryID = queryIntent.getIntExtra(RequestPullingService.RESPOND_INTENT_QUERY_ID, -1);
 		mUserID = queryIntent.getIntExtra(RequestPullingService.RESPOND_INTENT_USER_ID, -1);
+		mQueryImagePath = queryIntent.getStringExtra(RequestPullingService.RESPOND_INTENT_QUERY_IMAGE);
+		
+		/*
+		 * Show Query
+		 */
 		TextView textView = (TextView) findViewById(R.id.status_update);
-		textView.setText(mQueryID + ": " + mQuery);
+		//textView.setText(mQueryID + ": " + mQuery);
+		textView.setText("QuiltView" + ": " + mQuery);
+		
+		/*
+		 * Show Query Image
+		 */
+		if (mQueryImagePath.length() > 0)
+		{
+			Log.i("RespondActivity", "Show query image @" + mQueryImagePath);
+			File imgFile = new  File(mQueryImagePath);
+			Log.i("RespondActivity", "Show query image @" + imgFile.getAbsolutePath());
+			if(imgFile.exists()){
+				Log.i("RespondActivity", "Query image exists!");
+			    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+				ImageView img = (ImageView) findViewById(R.id.query_image);
+				img.setImageBitmap(myBitmap);
+			}
+  	  	}
+		
 	}
 	
 	/* Take a 10-sec video 
@@ -388,8 +419,8 @@ public class RespondActivity extends Activity {
     private Handler mHandler = new Handler () {
     	@Override
     	public void handleMessage(Message msg) {
-        	TextView textView = (TextView) findViewById(R.id.status_update);
-			textView.setText("Video successfully sent.");
+    		TextView textView = (TextView) findViewById(R.id.status_update);
+    		textView.setText("Video successfully sent.");
     	}
     };
 

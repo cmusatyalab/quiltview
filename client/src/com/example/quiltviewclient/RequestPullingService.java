@@ -1,5 +1,8 @@
 package com.example.quiltviewclient;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -10,18 +13,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import android.app.IntentService;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.text.format.DateFormat;
 import android.util.Log;
 
@@ -89,12 +88,14 @@ public class RequestPullingService extends IntentService {
 	    public static final String RESPOND_INTENT_QUERY = "com.example.quiltviewclient.respondquery";
 	    public static final String RESPOND_INTENT_QUERY_ID = "com.example.quiltviewclient.respondqueryID";
 	    public static final String RESPOND_INTENT_USER_ID = "com.example.quiltviewclient.responduserID";
-	    private void recordForQuery(String query, int queryID, int userID) {
+	    public static final String RESPOND_INTENT_QUERY_IMAGE = "com.example.quiltviewclient.queryImage";
+	    private void recordForQuery(String query, int queryID, int userID, String imagePath) {
         	Intent respondIntent = new Intent(this, RespondActivity.class);
         	respondIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         	respondIntent.putExtra(RESPOND_INTENT_QUERY, query);
         	respondIntent.putExtra(RESPOND_INTENT_QUERY_ID, queryID);
         	respondIntent.putExtra(RESPOND_INTENT_USER_ID, userID);
+        	respondIntent.putExtra(RESPOND_INTENT_QUERY_IMAGE, imagePath);
         	startActivity(respondIntent);
 
 //	    	NotificationCompat.Builder mBuilder =
@@ -161,6 +162,36 @@ public class RequestPullingService extends IntentService {
 		    	mLocation = locationManager.getLastKnownLocation(locationProvider);
 	    }
 	    
+    	private String saveImageToLocal (String remotePath) {
+    		if (remotePath.length() <= 0) return "";
+    		
+    		Log.i(LOG_TAG, "Entering saveImageToLocal");
+    		String localPath = Environment.getExternalStorageDirectory()
+    		        + "/QuiltView/" + "query_image.jpg";
+	    	try {
+				URL imageUrl = new URL(remotePath);
+		      	InputStream in = new BufferedInputStream(imageUrl.openStream());
+		      	ByteArrayOutputStream out = new ByteArrayOutputStream();
+		      	byte[] buf = new byte[1024];
+		      	int n = 0;
+		      	while (-1!=(n=in.read(buf)))
+		      	{
+		      		out.write(buf, 0, n);
+		      	}
+		      	out.close();
+		      	in.close();
+		      	byte[] response = out.toByteArray();
+		      	Log.i(LOG_TAG, "Image file size: " + response.length + "byte");
+		      	FileOutputStream fos = new FileOutputStream(localPath);
+		      	fos.write(response);
+		      	fos.close();
+		      	Log.i(LOG_TAG, "Image saved to local: " + localPath);
+		  	} catch (IOException e) {
+		  		Log.e(LOG_TAG, "Faile to save image to local", e);
+		  	}
+	    	return localPath;
+    	}
+    	
 	    private void pullRequest() {
 	        String resultTxt = " "
 		            + DateFormat.format("MM/dd/yy h:mmaa", System.currentTimeMillis());
@@ -187,7 +218,7 @@ public class RequestPullingService extends IntentService {
 		    HttpURLConnection urlConnection = null;
 		    try {
 //			    URL url = new URL("http://typhoon.elijah.cs.cmu.edu:8000/latest/"
-			    URL url = new URL("https://quiltview.opencloudlet.org/latest/"
+			    URL url = new URL("http://quiltview.opencloudlet.org/latest/"
 			    		+ "?user_id=" + mSerialNumber 
 			    		+ "&lat=" + latitude + "&lng=" + longitude);
 			    urlConnection = (HttpURLConnection) url.openConnection();
@@ -210,12 +241,15 @@ public class RequestPullingService extends IntentService {
 		                
 		        	try {
 		        	  JSONObject obj= (JSONObject) JSONValue.parse(jsonString);
-		        	  Log.i(LOG_TAG, obj.getClass().toString());
+		        	  //Log.i(LOG_TAG, obj.getClass().toString());
 		        	  String query = obj.get("content").toString();
 		        	  int queryID = Integer.parseInt(obj.get("query_id").toString());
 		        	  int userID = Integer.parseInt(obj.get("user_id").toString());
-		        	  Log.i(LOG_TAG, userID + ", " + queryID + ": " + query);    
-		        	  recordForQuery(query, queryID, userID);
+		        	  String imagePath = obj.get("image").toString();
+		        	  Log.i(LOG_TAG, userID + ", " + queryID + ": " + query + "&" + imagePath);    
+		        	  imagePath = saveImageToLocal(imagePath);
+		        	  
+		        	  recordForQuery(query, queryID, userID, imagePath);
 		        	} catch (NullPointerException ex) {
 		        		Log.i(LOG_TAG, "No valid query");
 		        	}

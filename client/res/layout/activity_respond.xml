@@ -9,6 +9,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".RespondActivity" >
 
+    <ImageView
+        android:id="@+id/query_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ></ImageView>
+    
     <TextView
         android:id="@+id/status_update"
         android:layout_width="wrap_content"
