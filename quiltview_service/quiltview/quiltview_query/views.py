@@ -63,7 +63,7 @@ def query(request):
             with open(TMP_IMAGE_0, 'wb') as dest:
                 dest.write(f.read())
             img = Image.open(TMP_IMAGE_0)
-            img = img.resize((128, 128), Image.ANTIALIAS) 
+            img = img.resize((250, 250), Image.ANTIALIAS) 
             img.save(TMP_IMAGE_PRE + "%d.jpg" % query.id)
             query.is_query_image = True
             query.save()
