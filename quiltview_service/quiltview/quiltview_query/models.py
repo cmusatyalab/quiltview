@@ -62,6 +62,8 @@ class Query(models.Model):
     time_out = models.IntegerField(default = 10 * 60) # 10 mins
     accepted_staleness = models.IntegerField(default = 10 * 60) # 10 mins
     reward = models.IntegerField(default = 1)
+    expected_reply = models.IntegerField(default = 3)
+    is_query_image = models.BooleanField(default = False)
 
     # responses
     cache_hit = models.BooleanField(default = False)

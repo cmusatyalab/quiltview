@@ -75,7 +75,10 @@
       <p>
         We have found similar queries in our system. You can view responses of these matched queries through the following links<br>
         {% for query in queries %}
-            "{{ query.content }}" (posted at {{ query.requested_time }} by {{ query.requester.google_account }}) <a href="/response?query_id={{ query.id }}">view responses</a> <br>
+          {% if query.is_query_image %}
+            <img src="/static/query_images/query_{{ query.id }}.jpg" height="64" width="64" class="img-polaroid">
+          {% endif %}
+          "{{ query.content }}" (posted at {{ query.requested_time }} by {{ query.requester.google_account }}) <a href="/response?query_id={{ query.id }}">view responses</a> <br>
         {% endfor %}
         You can also <a href="/query?{{ parameter }}">reload here</a>
       </p>
@@ -88,7 +91,9 @@
       </p>
     {% load tz %}
         {% for query in queries %}
-          <img src="/static/query.jpg" height="64" width="64" class="img-rounded">
+          {% if query.is_query_image %}
+            <img src="/static/query_images/query_{{ query.id }}.jpg" height="64" width="64" class="img-polaroid">
+          {% endif %}
           {{ query.content }} at ({{ query.interest_location_lat }}, {{ query.interest_location_lng }})? (posted at {{ query.requested_time }} by {{ query.requester.google_account }})  <a href="/response?query_id={{ query.id }}">view responses</a> 
           <br>
         {% endfor %}

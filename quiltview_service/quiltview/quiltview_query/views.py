@@ -65,6 +65,8 @@ def query(request):
             img = Image.open(TMP_IMAGE_0)
             img = img.resize((128, 128), Image.ANTIALIAS) 
             img.save(TMP_IMAGE_PRE + "%d.jpg" % query.id)
+            query.is_query_image = True
+            query.save()
 
     global query_deliver
 
