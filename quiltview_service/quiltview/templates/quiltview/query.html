@@ -88,6 +88,7 @@
       </p>
     {% load tz %}
         {% for query in queries %}
+          <img src="/static/query.jpg" height="64" width="64" class="img-rounded">
           {{ query.content }} at ({{ query.interest_location_lat }}, {{ query.interest_location_lng }})? (posted at {{ query.requested_time }} by {{ query.requester.google_account }})  <a href="/response?query_id={{ query.id }}">view responses</a> 
           <br>
         {% endfor %}
