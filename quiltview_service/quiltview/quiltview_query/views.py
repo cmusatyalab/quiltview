@@ -5,6 +5,7 @@ import json
 import requests
 import datetime
 import random
+import Image
 
 # rendering
 from django.template import RequestContext
@@ -16,7 +17,10 @@ from django.contrib.auth import logout
 import location
 from text_similarity import similarity, learn_dictionary
 
-users_to_deliver = []
+query_deliver = [[], 0, False]
+TMP_IMAGE_0 = "/home/ubuntu/quiltview/quiltview_service/quiltview/STATIC_DIRS/query_images/query_0.jpg"
+TMP_IMAGE_PRE = "/home/ubuntu/quiltview/quiltview_service/quiltview/STATIC_DIRS/query_images/query_"
+
 
 def index(request):
     form = QueryForm()
@@ -28,12 +32,14 @@ def logout_view(request):
     logout(request)
 
 def query(request):
-    def calc_users_deliver():
+    def calc_deliver():
         users = User.objects.filter(location_lat__gte = query.interest_location_lat - query.interest_location_span_lat)\
                             .filter(location_lat__lte = query.interest_location_lat + query.interest_location_span_lat)\
                             .filter(location_lng__gte = query.interest_location_lng - query.interest_location_span_lng)\
                             .filter(location_lng__lte = query.interest_location_lng + query.interest_location_span_lng)\
                             .filter(location_update_time__gte = timezone.now() - datetime.timedelta(seconds = 1 * 60))
+        for user in users:
+            print user.id
         users_to_deliver = []
         counter = 0
         x = range(users.count())
@@ -45,16 +51,24 @@ def query(request):
                 counter += 1
                 if counter >= 3:
                     break
-        return users_to_deliver
+        f = request.FILES.get('upload_file', None)
+        if f:
+            is_file_uploaded = True
+        else:
+            is_file_uploaded = False
+        return (users_to_deliver, query.id, is_file_uploaded)
+
     def handle_uploaded_file(f):
         if f:
-            destination = open('/home/ubuntu/test.jpg', 'wb')
-            destination.write(f.read())
-            destination.close()
-        else:
-            print 10000000
-        
-    global users_to_deliver
+            with open(TMP_IMAGE_0, 'wb') as dest:
+                dest.write(f.read())
+            img = Image.open(TMP_IMAGE_0)
+            img = img.resize((128, 128), Image.ANTIALIAS) 
+            img.save(TMP_IMAGE_PRE + "%d.jpg" % query.id)
+            query.is_query_image = True
+            query.save()
+
+    global query_deliver
 
     '''
     if request.method == 'POST':
@@ -105,9 +119,6 @@ def query(request):
         if not user_email:
             return render_to_response('quiltview/query.html', {'is_login_error':True, 'form':form}, RequestContext(request))
 
-        # handle file upload
-        handle_uploaded_file(request.FILES.get('upload_file', None))
-
         # get lat and lng of the given location
         #(lat, lng) = location.getLocationFromAddress(req_query_location)
         (lat, lng, s_lat, s_lng) = location.getLocationFromLink(req_query_location)
@@ -147,20 +158,23 @@ def query(request):
             if req_reload == "True":
                 query.reload_query = True
 
+        query.save()
+
+        # handle uploaed file
+        handle_uploaded_file(request.FILES.get('upload_file', None))
+
         if query.cache_hit and (not query.reload_query):    # cache hit
             print "Cache hit!!!"
             # prepare parameters to reload
             req_query_location_POST = req_query_location.replace(':', '%3A').replace('/', '%2F').replace('?', '%3F').replace('=', '%3D').replace('+', '%2B').replace(',', '%2C').replace('&', '%26')
             parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True&user_email=%s" % (req_query_content, 
                 req_query_location_POST, req_time_out_n, req_accepted_staleness_n, req_reward, user_email)
-            query.save()
             return render_to_response('quiltview/query.html',
                 {'queries':closest_queries, 'is_cache':True, 'parameter':parameter_string, 'form':form,
                 }, RequestContext(request))
         else:     # not cached or reloaded
-            # calculate a pool of users that should deliver the message
-            users_to_deliver = calc_users_deliver()
-            query.save()
+            # calculate 1. a pool of users that should deliver the message 2. query id 3. if a file is uploaded
+            query_deliver = calc_deliver()
             return render_to_response('quiltview/query.html',
                 {'query':query, 'is_post':True, 'form':form,
                 }, RequestContext(request))
@@ -185,8 +199,8 @@ def response(request):
         }, RequestContext(request))
 
 def latest(request):
-    global users_to_deliver
-    print users_to_deliver
+    global query_deliver
+    print query_deliver
 
     req_user_id = request.GET['user_id']
     #print req_user_id
@@ -215,7 +229,8 @@ def latest(request):
     # check prompts, cache and location
     if prompts.count() == 0 and \
           (not (latest_query.cache_hit and (not latest_query.reload_query))) and \
-          user.id in users_to_deliver:
+          latest_query.id == query_deliver[1] and \
+          user.id in query_deliver[0]:
         prompt = Prompt(user = user,
                         query = latest_query,
                         requested_time = latest_query.requested_time,
@@ -228,6 +243,10 @@ def latest(request):
         response_data['user_id'] = user.id
         response_data['content'] = latest_query.content
         response_data['query_id'] = latest_query.id
+        if query_deliver[2]:
+            response_data['image'] = "http://quiltview.opencloudlet.org/static/query_images/query_%d.jpg" % latest_query.id
+        else:
+            response_data['image'] = ""
     else:
         pass
 
