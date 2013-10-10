@@ -1,4 +1,5 @@
 from quiltview_query.models import User, Query, Video, Prompt
+from quiltview_query.forms import QueryForm
 
 import json
 import requests
@@ -18,7 +19,10 @@ from text_similarity import similarity, learn_dictionary
 users_to_deliver = []
 
 def index(request):
-    return render_to_response('quiltview/query.html', {}, RequestContext(request))
+    form = QueryForm()
+    return render_to_response('quiltview/query.html',
+        {'form':form,
+        }, RequestContext(request))
 
 def logout_view(request):
     logout(request)
@@ -42,25 +46,67 @@ def query(request):
                 if counter >= 3:
                     break
         return users_to_deliver
+    def handle_uploaded_file(f):
+        if f:
+            destination = open('/home/ubuntu/test.jpg', 'wb')
+            destination.write(f.read())
+            destination.close()
+        else:
+            print 10000000
         
     global users_to_deliver
 
-    req_query_content = request.GET['query_content']
-    req_query_location = request.GET['query_location']
-    req_time_out_n = request.GET['time_out_n']
+    '''
+    if request.method == 'POST':
+        form = QueryForm(request.POST)
+        if form.is_valid():
+            req_query_content = form.cleaned_data['query_content']
+            print req_query_content
+            req_query_location = form.cleaned_data['query_location']
+            req_time_out_n = form.cleaned_data['time_out_n']
+            if req_time_out_n:
+                req_time_out = int(req_time_out_n) * 60
+            req_accepted_staleness_n = form.cleaned_data['accepted_staleness_n']
+            if req_accepted_staleness_n:
+                req_accepted_staleness = int(req_accepted_staleness_n) * 60
+            req_reward = form.cleaned_data['reward']
+            req_expected_reply = form.cleaned_data['expected_reply']
+
+            if request.POST['post']=="True": # add a new query
+                pass
+            else:
+                
+            return render_to_response('quiltview/query.html',
+                {'form':form,
+                }, RequestContext(request))
+    else:
+        form = QueryForm()
+
+    return render_to_response('quiltview/query.html',
+        {'form':form,
+        }, RequestContext(request))
+    '''
+
+    form = QueryForm(request.POST, request.FILES)
+    req_query_content = request.POST['query_content']
+    req_query_location = request.POST['query_location']
+    req_time_out_n = request.POST['time_out_n']
     if req_time_out_n:
         req_time_out = int(req_time_out_n) * 60
-    req_accepted_staleness_n = request.GET['accepted_staleness_n']
+    req_accepted_staleness_n = request.POST['accepted_staleness_n']
     if req_accepted_staleness_n:
         req_accepted_staleness = int(req_accepted_staleness_n) * 60
-    req_reward = request.GET['reward']
+    req_reward = request.POST['reward']
+    req_expected_reply = request.POST['expected_reply']
 
-
-    if request.GET['post']=="True":  # add a new query
+    if request.POST['post']=="True":  # add a new query
         # check if the user has logged in
-        user_email = request.GET['user_email']
+        user_email = request.POST['user_email']
         if not user_email:
-            return render_to_response('quiltview/query.html', {'is_login_error':True}, RequestContext(request))
+            return render_to_response('quiltview/query.html', {'is_login_error':True, 'form':form}, RequestContext(request))
+
+        # handle file upload
+        handle_uploaded_file(request.FILES.get('upload_file', None))
 
         # get lat and lng of the given location
         #(lat, lng) = location.getLocationFromAddress(req_query_location)
@@ -97,26 +143,26 @@ def query(request):
 
         if len(closest_queries) > 0:   # cache hit
             query.cache_hit = True
-            req_reload = request.GET.get('reload', 'False')
+            req_reload = request.POST.get('reload', 'False')
             if req_reload == "True":
                 query.reload_query = True
 
         if query.cache_hit and (not query.reload_query):    # cache hit
             print "Cache hit!!!"
             # prepare parameters to reload
-            req_query_location_GET = req_query_location.replace(':', '%3A').replace('/', '%2F').replace('?', '%3F').replace('=', '%3D').replace('+', '%2B').replace(',', '%2C').replace('&', '%26')
+            req_query_location_POST = req_query_location.replace(':', '%3A').replace('/', '%2F').replace('?', '%3F').replace('=', '%3D').replace('+', '%2B').replace(',', '%2C').replace('&', '%26')
             parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True&user_email=%s" % (req_query_content, 
-                req_query_location_GET, req_time_out_n, req_accepted_staleness_n, req_reward, user_email)
+                req_query_location_POST, req_time_out_n, req_accepted_staleness_n, req_reward, user_email)
             query.save()
             return render_to_response('quiltview/query.html',
-                {'queries':closest_queries, 'is_cache':True, 'parameter':parameter_string,
+                {'queries':closest_queries, 'is_cache':True, 'parameter':parameter_string, 'form':form,
                 }, RequestContext(request))
         else:     # not cached or reloaded
             # calculate a pool of users that should deliver the message
             users_to_deliver = calc_users_deliver()
             query.save()
             return render_to_response('quiltview/query.html',
-                {'query':query, 'is_post':True,
+                {'query':query, 'is_post':True, 'form':form,
                 }, RequestContext(request))
     else:
         # show existing queries
@@ -126,7 +172,7 @@ def query(request):
             queries = queries[:10]
 
         return render_to_response('quiltview/query.html',
-            {'queries':queries, 'query_count':query_count, 'is_check':True,
+            {'queries':queries, 'query_count':query_count, 'is_check':True, 'form':form,
             }, RequestContext(request))
 
 def response(request):
