@@ -113,11 +113,13 @@ public class RespondActivity extends Activity {
 		 */
 		TextView textView = (TextView) findViewById(R.id.status_update);
 		//textView.setText(mQueryID + ": " + mQuery);
-		textView.setText("QuiltView" + ": " + mQuery);
+		textView.setText("QuiltView:\n" + mQuery + "?");
 		
 		/*
 		 * Show Query Image
 		 */
+		Log.i("RespondActivity", "mQueryImagePath length: "+ mQueryImagePath.length());
+		ImageView img = (ImageView) findViewById(R.id.query_image);
 		if (mQueryImagePath.length() > 0)
 		{
 			Log.i("RespondActivity", "Show query image @" + mQueryImagePath);
@@ -126,9 +128,10 @@ public class RespondActivity extends Activity {
 			if(imgFile.exists()){
 				Log.i("RespondActivity", "Query image exists!");
 			    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-				ImageView img = (ImageView) findViewById(R.id.query_image);
 				img.setImageBitmap(myBitmap);
 			}
+  	  	} else {
+  	  		//img.setImageResource(R.drawable.ic_launcher);
   	  	}
 		
 	}

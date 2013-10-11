@@ -8,28 +8,37 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".RespondActivity" >
-
-    <ImageView
-        android:id="@+id/query_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ></ImageView>
-    
-    <TextView
-        android:id="@+id/status_update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="@string/hello_world" />
-    
-	<Button
-	    android:id="@+id/record_button"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:onClick="recordVideo"
-	    android:textSize="15sp"
-	    android:text="@string/button_record" />
 	
+    <LinearLayout 
+        android:orientation = "horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="250px" >
+	    <ImageView
+	        android:id="@+id/query_image"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        ></ImageView>
+	    
+		<LinearLayout 
+		    android:orientation = "vertical"
+		    android:layout_width="wrap_content"
+        	android:layout_height="match_parent">
+	        <TextView
+		        android:id="@+id/status_update"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="30sp"
+		        android:text="@string/hello_world" />
+			<Button
+			    android:id="@+id/record_button"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:onClick="recordVideo"
+			    android:textSize="15sp"
+			    android:text="@string/button_record" />
+		</LinearLayout>
+	</LinearLayout>
+    
     <FrameLayout
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
