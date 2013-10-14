@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     #url(r'^logout/$', 'quiltview_query.views.logout'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': 'http://quiltview.opencloudlet.org'}),
     url(r'^query/$', 'quiltview_query.views.query'),
+    url(r'^reload/$', 'quiltview_query.views.reload'),
     url(r'^response/$', 'quiltview_query.views.response'),
     url(r'^latest/$', 'quiltview_query.views.latest'),
 

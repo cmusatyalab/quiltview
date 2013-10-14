@@ -166,9 +166,7 @@ def query(request):
         if query.cache_hit and (not query.reload_query):    # cache hit
             print "Cache hit!!!"
             # prepare parameters to reload
-            req_query_location_POST = req_query_location.replace(':', '%3A').replace('/', '%2F').replace('?', '%3F').replace('=', '%3D').replace('+', '%2B').replace(',', '%2C').replace('&', '%26')
-            parameter_string = "query_content=%s&query_location=%s&time_out_n=%s&accepted_staleness_n=%s&reward=%s&reload=True&post=True&user_email=%s" % (req_query_content, 
-                req_query_location_POST, req_time_out_n, req_accepted_staleness_n, req_reward, user_email)
+            parameter_string = "query_id=%d" % query.id
             return render_to_response('quiltview/query.html',
                 {'queries':closest_queries, 'is_cache':True, 'parameter':parameter_string, 'form':form,
                 }, RequestContext(request))
@@ -188,6 +186,48 @@ def query(request):
         return render_to_response('quiltview/query.html',
             {'queries':queries, 'query_count':query_count, 'is_check':True, 'form':form,
             }, RequestContext(request))
+
+def reload(request):
+    def calc_deliver():
+        users = User.objects.filter(location_lat__gte = query.interest_location_lat - query.interest_location_span_lat)\
+                            .filter(location_lat__lte = query.interest_location_lat + query.interest_location_span_lat)\
+                            .filter(location_lng__gte = query.interest_location_lng - query.interest_location_span_lng)\
+                            .filter(location_lng__lte = query.interest_location_lng + query.interest_location_span_lng)\
+                            .filter(location_update_time__gte = timezone.now() - datetime.timedelta(seconds = 1 * 60))
+        for user in users:
+            print user.id
+        users_to_deliver = []
+        counter = 0
+        x = range(users.count())
+        random.shuffle(x)
+        for idx in xrange(users.count()):
+            prompts = users[x[idx]].prompt_set.filter(requested_time__gte = timezone.now() - datetime.timedelta(days = 1))
+            if prompts.count() < users[x[idx]].max_upload_time:
+                users_to_deliver.append(users[x[idx]].id)
+                counter += 1
+                if counter >= 3:
+                    break
+        is_file_uploaded = query.is_query_image
+        return (users_to_deliver, query.id, is_file_uploaded)
+
+    global query_deliver
+
+    form = QueryForm()
+    req_query_id = int(request.GET['query_id'])
+    query = Query.objects.get(id=req_query_id)
+    old_id = query.id
+    query.pk = None
+    query.reload_query = True
+    query.save()
+
+    if query.is_query_image:
+        img = Image.open(TMP_IMAGE_PRE + "%d.jpg" % old_id)
+        img.save(TMP_IMAGE_PRE + "%d.jpg" % query.id)
+    
+    query_deliver = calc_deliver()
+    return render_to_response('quiltview/query.html',
+        {'query':query, 'is_post':True, 'form':form,
+        }, RequestContext(request))
 
 def response(request):
     req_query_id = int(request.GET['query_id'])

@@ -80,7 +80,7 @@
           {% endif %}
           "{{ query.content }}" (posted at {{ query.requested_time }} by {{ query.requester.google_account }}) <a href="/response?query_id={{ query.id }}">view responses</a> <br>
         {% endfor %}
-        You can also <a href="/query?{{ parameter }}">reload here</a>
+        You can also <a href="/reload?{{ parameter }}">reload here</a>
       </p>
     {% endif %}
 
