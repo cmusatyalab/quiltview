@@ -144,7 +144,7 @@ def query(request):
         # detect similarity
         closest_queries = []
         for matched_query in matched_queries.all():
-            if similarity.similarity(matched_query.content, query.content) > 0.3 & location.overlap(matched_query, query):
+            if similarity.calc_similarity(matched_query.content, query.content) > 0.3 and location.overlap(matched_query, query):
                 closest_queries.append(matched_query)
 
         if len(closest_queries) > 0:   # cache hit
