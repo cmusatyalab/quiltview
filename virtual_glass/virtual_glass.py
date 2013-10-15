@@ -15,11 +15,12 @@ VIDEO_RESOURCE = "/api/dm/video/"
 
 class VirtualUser(multiprocessing.Process):
     
-    def __init__(self, uid, lat, lng, dailyLimit):
+    def __init__(self, uid, lat, lng, dailyLimit, respondProb):
         multiprocessing.Process.__init__(self)
         self.uid = "VIRTUAL" + uid
         self.lat = lat
         self.lng = lng
+        self.respondProb = respondProb
 
         fakeemail = self.uid + "@example.com"
         self.register(self.uid, fakeemail, dailyLimit)
@@ -30,7 +31,7 @@ class VirtualUser(multiprocessing.Process):
         pullcount = 0;
         while (pullcount < 10) :
             time.sleep(2) 
-            self.pull(self.lat, self.lng)
+            self.pullAndRespond()
             #pullcount += 1
         return
 
@@ -40,7 +41,9 @@ class VirtualUser(multiprocessing.Process):
 
 
     def updateVideo(self, query_content, query_id, user_id) :
-        FAKE_VIDEO_NAME = "fakevideo.mp4"
+        videoID = random.randint(0,4)
+        FAKE_VIDEO_NAME = "fakevideo" + str(videoID) + ".mp4"
+        print "Uploading " + FAKE_VIDEO_NAME + " to YouTube..."
         from optparse import OptionParser
         parser = OptionParser()
         parser.add_option("--file", dest="file", help="Video file to upload",
@@ -59,7 +62,7 @@ class VirtualUser(multiprocessing.Process):
         options.title = "QuiltView: %s" % query_content
         video_watch_id = upload_youtube.initialize_upload(options)   # this function handles all uploading...
 
-        # STEP 3: register new video at QuiltView
+        # register new video at QuiltView
         new_video_entry = {"url" : "http://www.youtube.com/watch?v=%s" % video_watch_id,
                            "owner" : "/api/dm/user/%d/" % user_id,
                            "query" : "/api/dm/query/%d/" % query_id, 
@@ -68,8 +71,8 @@ class VirtualUser(multiprocessing.Process):
                           }  # some fields are random for now
         post_video.post(QUILTVIEW_URL, VIDEO_RESOURCE, new_video_entry)
 
-    def pull(self, lat, lng):
-        print "Pull #%s @(%f,%f)" % (self.uid, lat, lng)
+    def pullAndRespond(self):
+        print "Pull #%s @(%f,%f)" % (self.uid, self.lat, self.lng)
         '''
             https://quiltview.opencloudlet.org/latest/
             ?user_id=<mSerialNumber>
@@ -77,7 +80,7 @@ class VirtualUser(multiprocessing.Process):
             &lng=<longitude>
         '''
         url = QUILTVIEW_URL + "/latest/" + \
-                   "?user_id=%s&lat=%f&lng=%f" % (self.uid, lat, lng)
+                   "?user_id=%s&lat=%f&lng=%f" % (self.uid, self.lat, self.lng)
         r = requests.get(url)
         json_result = r.json()
             
@@ -89,22 +92,29 @@ class VirtualUser(multiprocessing.Process):
             user_id = json_result['user_id']
             print "Got a response. Upload to Youtube"
             #Upload video to Youtube
-            self.updateVideo(query_content, query_id, user_id)
+            #respondProb = 0.5
+            rolldice = random.random() #[0.0, 1.0)
+            if (rolldice < self.respondProb) :
+                print "Decided to respond"
+                self.updateVideo(query_content, query_id, user_id)
+            else:
+                print "Decided NOT to respond"
 
 
 def create():
-    usage = "python virtual_glass.py create <number of users> <query limit/day> <google map link>"  
+    usage = "python virtual_glass.py create <number of users> <query limit/day> <google map link> <respond probability>"  
     '''
     <google map link> example
     https://maps.google.com/?ll=40.442758,-79.942338&spn=0.00743,0.015814&t=m&z=17
     '''
-    if len(sys.argv) != 5 :
+    if len(sys.argv) != 6 :
         print usage
         exit(0)
     else :
         nUser = int (sys.argv[2])
         dailyLimit = int (sys.argv[3])
         mapUrl = sys.argv[4]
+        respondProb = float (sys.argv[5])
 
     from urlparse import urlparse
     from urlparse import parse_qs
@@ -122,8 +132,8 @@ def create():
     lat_spn = float(spn[0])
     lng_spn = float(spn[1])
 
-    print "Creating %d virtual glass users,\n with daily limit of %d queries,\n around (%f, %f) " \
-        % (nUser, dailyLimit, lat_center, lng_center)
+    print "Creating %d virtual glass users,\n with daily limit of %d queries,\n around (%f, %f) \n with responding probability %f " \
+        % (nUser, dailyLimit, lat_center, lng_center, respondProb)
     #patchID
     #A time stamp for this patch of virtual glasses
     #To add to userID
@@ -140,15 +150,15 @@ def create():
     pid = os.getpid()
     f.write('Latitude,Longitude,Description,Icon,' + str(pid) + '\n')
     for i in range(0, nUser) :
-        rand = random.random() - 0.5; # -1 ~ 1
+        rand = random.random() - 0.5; # -0.5 ~ 0.5
         lat_i = lat_center + rand * lat_spn;
-        rand = random.random() - 0.5; # -1 ~ 1
+        rand = random.random() - 0.5; # -0.5 ~ 0.5
         lng_i = lng_center + rand * lng_spn;
         uid = patchID + "~" + str(i)
         print "Starting Virtual User #%s lat=%f \tlng=%f" % (uid, lat_i, lng_i)
         
         #new thread
-        newUser = VirtualUser(uid, lat_i, lng_i, dailyLimit)
+        newUser = VirtualUser(uid, lat_i, lng_i, dailyLimit, respondProb)
         newUser.start()
         f.write( str(lat_i) + "," + str(lng_i) + "," + "VIRTUAL" + uid  + ',,' + str(newUser.pid) + '\n') 
 
