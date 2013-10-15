@@ -1,33 +1,22 @@
-from gensim import corpora, models, similarities
 import sys
+import logging, gensim, bz2
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-def find_closest(doc, new_documents_len):
-    dictionary = corpora.Dictionary.load('/tmp/deerwester.dict')
-    corpus = corpora.MmCorpus('/tmp/deerwester.mm') # comes from the first tutorial, "From strings to vectors"
-    #print corpus
+MODEL_DIR = "/home/ubuntu/quiltview/quiltview_service/quiltview/quiltview_query/text_similarity/"
 
-    lsi = models.LsiModel(corpus, id2word=dictionary, num_topics=2)
-    #doc = "Has the murderer been caught" # query!!!
-    vec_bow = dictionary.doc2bow(doc.lower().split())
-    vec_lsi = lsi[vec_bow] # convert the query to LSI space
-    #print vec_lsi
+def calc_similarity(doc1, doc2):
+    # load id->word mapping (the dictionary), one of the results of step 2 above
+    id2word = gensim.corpora.Dictionary.load_from_text(MODEL_DIR + 'wiki_en_wordids.txt')
 
-    index = similarities.MatrixSimilarity(lsi[corpus]) # transform corpus to LSI space and index it
+    lda = gensim.models.LdaModel.load('model.lda')
 
-    index.save('/tmp/deerwester.index')
-    index = similarities.MatrixSimilarity.load('/tmp/deerwester.index')
+    doc1_bow = id2word.doc2bow(doc1.lower().split())
+    doc2_bow = id2word.doc2bow(doc2.lower().split())
+    doc1_lda = lda[doc1_bow]
+    doc2_lda = lda[doc2_bow]
 
-    sims = index[vec_lsi] # perform a similarity query against the corpus
-    #print list(enumerate(sims)) # print (document_number, document_similarity) 2-tuples
+    index = gensim.similarities.MatrixSimilarity([doc1_lda], num_features=100)
 
-    sims = sorted(enumerate(sims), key=lambda item: -item[1])
+    sims = index[doc2_lda]
 
-    results = []
-    for i in range(len(sims)) :
-        #print sims[i] # print sorted (document number, similarity score) 2-tuples
-        #print documents[sims[i][0]].strip()
-        if sims[i][1] < 0.99:
-            break
-        if sims[i][0] < new_documents_len:
-            results.append(sims[i][0])
-    return results
+    return sims[0]

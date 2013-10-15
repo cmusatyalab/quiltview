@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.contrib.auth import logout
 
 import location
-from text_similarity import similarity, learn_dictionary
+from text_similarity import similarity
 
 query_deliver = [[], 0, False]
 TMP_IMAGE_0 = "/home/ubuntu/quiltview/quiltview_service/quiltview/STATIC_DIRS/query_images/query_0.jpg"
@@ -142,15 +142,10 @@ def query(request):
         matched_queries = Query.objects.filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))\
                                        .filter(interest_location_lat = lat).filter(interest_location_lng = lng).filter(interest_location_span_lat = s_lat).filter(interest_location_span_lng = s_lng)
         # detect similarity
-        new_documents = []
-        for matched_query in matched_queries.all():
-            new_documents.append(matched_query.content)
-        learn_dictionary.learn(new_documents)
-        closest_query_idxes = similarity.find_closest(query.content, len(new_documents))
         closest_queries = []
-        for idx in closest_query_idxes:
-            if location.overlap(matched_queries[idx], query):
-                closest_queries.append(matched_queries[idx])
+        for matched_query in matched_queries.all():
+            if similarity.similarity(matched_query.content, query.content) > 0.3 & location.overlap(matched_query, query):
+                closest_queries.append(matched_query)
 
         if len(closest_queries) > 0:   # cache hit
             query.cache_hit = True
