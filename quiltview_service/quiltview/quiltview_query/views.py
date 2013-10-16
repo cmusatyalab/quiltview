@@ -46,11 +46,15 @@ def query(request):
         random.shuffle(x)
         for idx in xrange(users.count()):
             prompts = users[x[idx]].prompt_set.filter(requested_time__gte = timezone.now() - datetime.timedelta(days = 1))
-            if prompts.count() < users[x[idx]].max_upload_time:
-                users_to_deliver.append(users[x[idx]].id)
-                counter += 1
-                if counter >= 3:
-                    break
+            if prompts.count() >= users[x[idx]].max_upload_time:
+                continue
+            preferences = json.loads(users[x[idx]].other_preferences)
+            if preferences.get('min_reward', -1) > query.reward:
+                continue
+            users_to_deliver.append(users[x[idx]].id)
+            counter += 1
+            if counter >= 3:
+                break
         f = request.FILES.get('upload_file', None)
         if f:
             is_file_uploaded = True
@@ -137,6 +141,8 @@ def query(request):
             query.time_out = req_time_out
         if req_accepted_staleness_n:
             query.accepted_staleness = req_accepted_staleness
+        if req_reward:
+            query.reward = int(req_reward)
 
         # check cache based on time
         matched_queries = Query.objects.filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))\
@@ -197,11 +203,15 @@ def reload(request):
         random.shuffle(x)
         for idx in xrange(users.count()):
             prompts = users[x[idx]].prompt_set.filter(requested_time__gte = timezone.now() - datetime.timedelta(days = 1))
-            if prompts.count() < users[x[idx]].max_upload_time:
-                users_to_deliver.append(users[x[idx]].id)
-                counter += 1
-                if counter >= 3:
-                    break
+            if prompts.count() >= users[x[idx]].max_upload_time:
+                continue
+            preferences = json.loads(users[x[idx]].other_preferences)
+            if preferences.get('min_reward', -1) > query.reward:
+                continue
+            users_to_deliver.append(users[x[idx]].id)
+            counter += 1
+            if counter >= 3:
+                break
         is_file_uploaded = query.is_query_image
         return (users_to_deliver, query.id, is_file_uploaded)
 
