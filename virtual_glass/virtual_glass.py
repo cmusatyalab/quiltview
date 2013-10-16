@@ -37,7 +37,10 @@ class VirtualUser(multiprocessing.Process):
 
     def register(self, uid, uemail, dailyLimit) :
         print "Register #%s %s" % (uid, uemail)
-        pprint(post_video.post(QUILTVIEW_URL, "/api/dm/user/", {"location_lat":"0", "location_lng":"0", "google_account":uemail, "uuid":uid, "max_upload_time": dailyLimit}))
+        prefDic = {'min_reward': 5, 
+                   'active_hours' : '9am-5pm' }
+        preference = json.dumps(prefDic)
+        pprint(post_video.post(QUILTVIEW_URL, "/api/dm/user/", {"location_lat":"0", "location_lng":"0", "google_account":uemail, "uuid":uid, "max_upload_time": dailyLimit, "other_preferences":preference}))
 
 
     def updateVideo(self, query_content, query_id, user_id) :
