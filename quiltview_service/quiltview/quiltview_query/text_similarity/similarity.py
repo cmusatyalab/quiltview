@@ -1,5 +1,6 @@
 import sys
 import logging, gensim, bz2
+import re
 #logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 MODEL_DIR = "/home/ubuntu/quiltview/quiltview_service/quiltview/quiltview_query/text_similarity/"
@@ -9,8 +10,10 @@ lda = gensim.models.LdaModel.load(MODEL_DIR + 'model.lda')
 
 def calc_similarity(doc1, doc2):
     # load id->word mapping (the dictionary), one of the results of step 2 above
-    doc1_bow = id2word.doc2bow(doc1.lower().split())
-    doc2_bow = id2word.doc2bow(doc2.lower().split())
+    doc1_split = re.findall(r"[\w]+|[^\s\w]", doc1.lower())
+    doc2_split = re.findall(r"[\w]+|[^\s\w]", doc2.lower())
+    doc1_bow = id2word.doc2bow(doc1_split)
+    doc2_bow = id2word.doc2bow(doc2_split)
     doc1_lda = lda[doc1_bow]
     doc2_lda = lda[doc2_bow]
 
