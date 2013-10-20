@@ -58,9 +58,9 @@
     </p>
     </form>
 
-    {% if is_login_error %}
+    {% if is_error %}
       <hr>
-      Login error: You have to sign in before posting a query.
+      {{ error_message }}
     {% endif %}
 
     {% if is_post %}

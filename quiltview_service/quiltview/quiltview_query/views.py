@@ -126,14 +126,21 @@ def query(request):
         # check if the user has logged in
         user_email = request.POST['user_email']
         if not user_email:
-            return render_to_response('quiltview/query.html', {'is_login_error':True, 'form':form}, RequestContext(request))
+            return render_to_response('quiltview/query.html', 
+                {'is_login_error':True, 'error_message':"Error: You have to sign in before posting a query.", 'form':form}, 
+                RequestContext(request))
 
         # get lat and lng of the given location
         #(lat, lng) = location.getLocationFromAddress(req_query_location)
         (lat, lng, s_lat, s_lng) = location.getLocationFromLink(req_query_location)
 
         # insert a new query
-        user = User.objects.get(google_account = user_email)
+        try:
+            user = User.objects.get(google_account = user_email)
+        except:
+            return render_to_response('quiltview/query.html', 
+                {'is_error':True, 'error_message':"Error: The current logged in user has not been registered. Please contact the administrator.", 'form':form}, 
+                RequestContext(request))
         query = Query(content = "%s" % (req_query_content),
                       requester = user,
                       interest_location_lat = lat,
