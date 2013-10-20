@@ -238,6 +238,7 @@ def reload(request):
     old_id = query.id
     query.pk = None
     query.reload_query = True
+    query.requested_time = timezone.now()
     query.save()
 
     if query.is_query_image:
@@ -269,7 +270,12 @@ def latest(request):
 
     response_data = {}
 
-    user = User.objects.get(uuid = req_user_id)
+    try:
+        user = User.objects.get(uuid = req_user_id)
+    except:
+        user = User(google_account = "unknown_%s" % req_user_id,
+                    uuid = req_user_id,
+                   )    
     user.location_lat = float(req_user_lat)
     user.location_lng = float(req_user_lng)
     user.location_update_time = timezone.now()
