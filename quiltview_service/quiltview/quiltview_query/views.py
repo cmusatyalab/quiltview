@@ -47,9 +47,14 @@ def query(request):
         for idx in xrange(users.count()):
             prompts = users[x[idx]].prompt_set.filter(requested_time__gte = timezone.now() - datetime.timedelta(days = 1))
             if prompts.count() >= users[x[idx]].max_upload_time:
+                print "prompt%d" % users[x[idx]].id
                 continue
-            preferences = json.loads(users[x[idx]].other_preferences)
+            if users[x[idx]].other_preferences:
+                preferences = json.loads(users[x[idx]].other_preferences)
+            else:
+                preferences = {}
             if preferences.get('min_reward', -1) > query.reward:
+                print "award%d" % users[x[idx]].id
                 continue
             users_to_deliver.append(users[x[idx]].id)
             counter += 1
@@ -205,7 +210,10 @@ def reload(request):
             prompts = users[x[idx]].prompt_set.filter(requested_time__gte = timezone.now() - datetime.timedelta(days = 1))
             if prompts.count() >= users[x[idx]].max_upload_time:
                 continue
-            preferences = json.loads(users[x[idx]].other_preferences)
+            if users[x[idx]].other_preferences:
+                preferences = json.loads(users[x[idx]].other_preferences)
+            else:
+                preferences = {}
             if preferences.get('min_reward', -1) > query.reward:
                 continue
             users_to_deliver.append(users[x[idx]].id)
