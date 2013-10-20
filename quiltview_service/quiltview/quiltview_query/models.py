@@ -22,7 +22,7 @@ class User(models.Model):
     credit = models.IntegerField(default = 3)
 
     # preferences
-    max_upload_time = models.IntegerField(default = 5)
+    max_upload_time = models.IntegerField(default = 500)
     UNIT_CHOICES = (
         ('MM', 'Month'),
         ('DD', 'Day'),

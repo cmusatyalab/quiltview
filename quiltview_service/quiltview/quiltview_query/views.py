@@ -235,16 +235,10 @@ def reload(request):
     form = QueryForm()
     req_query_id = int(request.GET['query_id'])
     query = Query.objects.get(id=req_query_id)
-    old_id = query.id
-    query.pk = None
     query.reload_query = True
     query.requested_time = timezone.now()
     query.save()
 
-    if query.is_query_image:
-        img = Image.open(TMP_IMAGE_PRE + "%d.jpg" % old_id)
-        img.save(TMP_IMAGE_PRE + "%d.jpg" % query.id)
-    
     query_deliver = calc_deliver()
     return render_to_response('quiltview/query.html',
         {'query':query, 'is_post':True, 'form':form,
