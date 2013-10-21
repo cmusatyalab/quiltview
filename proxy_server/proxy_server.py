@@ -1,8 +1,10 @@
 # TODO: description
 
+from multiprocessing import Process, Manager
 import socket
 import struct
 import os
+import time
 from optparse import OptionParser
 import Image, cv, cv2
 from cStringIO import StringIO
@@ -10,10 +12,9 @@ from cStringIO import StringIO
 import upload_youtube 
 import post_video
 
-TMP_VIDEO_NAME = "uploaded_video.avi"
+TMP_VIDEO_NAME = "uploaded_video"
 
-#QUILTVIEW_URL = "http://typhoon.elijah.cs.cmu.edu:8000"
-QUILTVIEW_URL = "https://quiltview.opencloudlet.org"
+QUILTVIEW_URL = "http://quiltview.opencloudlet.org"
 VIDEO_RESOURCE = "/api/dm/video/"
 
 def processFrame(data):
@@ -37,15 +38,17 @@ def processFrame(data):
 
     return frame
 
-def startServer(host, port, buf, options):
+def serverNewClient(queue, options):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, PORT))
+    s.bind(("", 0))
+    port = s.getsockname()[1]
+    queue.put(port)
     s.listen(0)
     while True:
         # STEP 1: receive video from Glass
-        print "waiting for connection"
+        print "proxy: waiting for connection"
         conn, addr = s.accept()
-        print 'Connected by', addr
+        print 'proxy: Connected by', addr
 
         data = conn.recv(4)
         user_ID = struct.unpack("!I", data)[0]
@@ -80,7 +83,7 @@ def startServer(host, port, buf, options):
         print "Connection terminated by the other side"
 
         # write to file
-        videoWriter = cv.CreateVideoWriter(TMP_VIDEO_NAME, cv.CV_FOURCC('X', 'V', 'I', 'D'), 30, (320, 240), True)
+        videoWriter = cv.CreateVideoWriter(TMP_VIDEO_NAME + "%d.avi" % port, cv.CV_FOURCC('X', 'V', 'I', 'D'), 15, (320, 240), True)
         if not videoWriter:
             print "Error in creating video writer"
             sys.exit(1)
@@ -93,6 +96,7 @@ def startServer(host, port, buf, options):
 
         # STEP 2: upload to Youtube, get url back
         options.title = "QuiltView: %s" % query_content
+        options.file = TMP_VIDEO_NAME + "%d.avi" % port
         video_watch_id = upload_youtube.initialize_upload(options)   # this function handles all uploading...
 
         # STEP 3: register new video at QuiltView
@@ -105,7 +109,32 @@ def startServer(host, port, buf, options):
         post_video.post(QUILTVIEW_URL, VIDEO_RESOURCE, new_video_entry)
 
         # cleaning
-        #os.remove(TMP_VIDEO_NAME)
+        os.remove(TMP_VIDEO_NAME + "%d.avi" % port)
+
+        break
+
+def startServer(host, port, options):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(0)
+
+    queue = Manager().Queue()
+    while True:
+        print "main: waiting for connection"
+        conn, addr = s.accept()
+        print 'main: Connected by', addr
+
+        data = conn.recv(1024)
+        print 'received port request'
+        p = Process(target = serverNewClient, args = (queue, options, ))
+        p.start()
+        while queue.empty():
+            time.sleep(0.05)
+            print "queue is still empty"
+        port = queue.get()
+        conn.sendall(str(port) + '\r\n')
+        print "assigned port %d to new client" % port
+
 
 if __name__ == "__main__":
     parser = OptionParser()
@@ -125,5 +154,4 @@ if __name__ == "__main__":
 
     HOST = ""
     PORT = 7950
-    BUF = 1024
-    startServer(HOST, PORT, BUF, options)
+    startServer(HOST, PORT, options)

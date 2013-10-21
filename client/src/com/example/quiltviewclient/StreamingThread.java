@@ -1,12 +1,15 @@
 package com.example.quiltviewclient;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -38,6 +41,8 @@ public class StreamingThread extends Thread {
     private int protocolIndex;  // may use a protocol other than UDP
     private DatagramSocket udpSocket;
     private Socket socket;
+    private PrintWriter TCPWriter;
+    private BufferedReader TCPReader;
     private InetAddress remoteIP;
     private int remotePort;
     
@@ -95,6 +100,24 @@ public class StreamingThread extends Thread {
         			Log.i("sendVideo", "Socket Connected");
         		else
         			Log.e("sendVideo", "Socket not connected!");
+        		TCPReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        		TCPWriter = new PrintWriter(socket.getOutputStream(), true);	// true means automatic flush
+        		try {
+        			TCPWriter.println("QUERY PORT");
+        			Log.i("sendVideo", "Send query for port");
+        			String newLine = TCPReader.readLine();
+        			Log.i("sendVideo", "Got port info:" + newLine);
+        			remotePort = Integer.parseInt(newLine);
+        			Log.i("sendVideo", "Got port to stream: " + remotePort);
+				} catch (IOException e) {
+					Log.e("sendVideo", "Failed to get stream port: " + e.toString());
+				}
+        		socket.close();
+        		socket = new Socket("typhoon.elijah.cs.cmu.edu", remotePort);
+        		if (socket.isConnected())
+        			Log.i("sendVideo", "Streaming socket Connected");
+        		else
+        			Log.e("sendVideo", "Streaming socket not connected!");
         		outStream = socket.getOutputStream();
             }
         } catch (SocketException e) {

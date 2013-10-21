@@ -249,7 +249,7 @@ public class RespondActivity extends Activity {
         while (streamingHandler == null) {
             try {
                 Log.d("takeVideoWithCameraAPI", "Sleep a little bit to wait for the streaming Handler to get prepared");
-                Thread.sleep(10);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Log.e("takeVideoWithCameraAPI", "Error in sleeping...: " + e.getMessage());
             }

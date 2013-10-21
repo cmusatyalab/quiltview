@@ -53,7 +53,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         for (int[] range: supportedFps) {
             Log.v(LOG_TAG, "available fps ranges:" + range[0] + ", " + range[1]);
         }
-        int[] targetRange = supportedFps.get(supportedFps.size() - 1);
+        int[] targetRange = supportedFps.get(2);	// 15
         Log.d(LOG_TAG, "available fps ranges:" + targetRange[0] + ", " + targetRange[1]);
         parameters.setPreviewFpsRange(targetRange[0], targetRange[1]);
         
