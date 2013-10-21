@@ -210,6 +210,7 @@ public class RespondActivity extends Activity {
 	
 	private void takeVideoWithCameraAPI() throws IOException {
 		Button record_button = (Button) findViewById(R.id.record_button);
+		record_button.setEnabled(false);
 		view_camera.setVisibility(View.VISIBLE);
 		TextView textView = (TextView) findViewById(R.id.status_update);
 		textView.setText("Recording...");
