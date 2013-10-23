@@ -95,6 +95,8 @@ public class StreamingThread extends Thread {
                         udpSocket.getInetAddress().toString() + ":" + udpSocket.getPort());      
                 break;
             case 1:
+            	if ((socket != null) && (!socket.isClosed()))
+            		socket.close();
             	socket = new Socket("typhoon.elijah.cs.cmu.edu", 7950);
         		if (socket.isConnected())
         			Log.i("sendVideo", "Socket Connected");
@@ -213,7 +215,7 @@ public class StreamingThread extends Thread {
                 }
                 if (msg_in.what == CODE_SEND_STOP) { 
                 	try {
-            			socket.close();
+                		//socket.close();
             	    	Log.i("sendVideo", "Exited the procedure normally.");
             		}
             		catch (Exception ex) {

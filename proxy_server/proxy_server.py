@@ -66,20 +66,25 @@ def serverNewClient(queue, options):
 
         #video_file = open(TMP_VIDEO_NAME, 'w')
         frames = []
+        conn.settimeout(3)
         data = conn.recv(4)
         while data: 
-            frame_len = struct.unpack("!I", data)[0]
-            print "Frame length = %d" % frame_len
-            data = ""
-            received_len = 0
-            while received_len < frame_len:
-                data_tmp = conn.recv(frame_len - received_len)
-                data += data_tmp
-                received_len += len(data_tmp)
-            print "received %d bytes" % len(data)
-            frame = processFrame(data)
-            frames.append(frame)
-            data = conn.recv(4)
+            try:
+                frame_len = struct.unpack("!I", data)[0]
+                print "Frame length = %d" % frame_len
+                data = ""
+                received_len = 0
+                while received_len < frame_len:
+                    data_tmp = conn.recv(frame_len - received_len)
+                    data += data_tmp
+                    received_len += len(data_tmp)
+                print "received %d bytes" % len(data)
+                frame = processFrame(data)
+                frames.append(frame)
+                data = conn.recv(4)
+            except:
+                print "timeout"
+                break
         print "Connection terminated by the other side"
 
         # write to file
