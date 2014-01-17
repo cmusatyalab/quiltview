@@ -152,12 +152,19 @@ public class RequestPullingService extends IntentService {
     	
     	private void getLocation() {
     		mLocationUpdated = false;
-	    	// Register the listener with the Location Manager to receive location updates
-	    	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+		    //String locationProvider = LocationManager.GPS_PROVIDER;
+    		String locationProvider = LocationManager.NETWORK_PROVIDER;
+
+    		// Register the listener with the Location Manager to receive location updates
+    		try {
+    			locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+    		} catch (IllegalArgumentException ex) {
+    			Log.i(LOG_TAG, "GPS provider not available");
+    			mLocation = null;
+    		}
 
 	    	//if (mLocationUpdated)
 	    	
-		    String locationProvider = LocationManager.GPS_PROVIDER;
 		    if (mLocation == null)
 		    	mLocation = locationManager.getLastKnownLocation(locationProvider);
 	    }
@@ -197,7 +204,7 @@ public class RequestPullingService extends IntentService {
 		            + DateFormat.format("MM/dd/yy h:mmaa", System.currentTimeMillis());
 		    Log.i(LOG_TAG, "Want to pull here." + resultTxt);
 		    
-		    //getLocation();
+		    getLocation();
 		    double latitude, longitude;
 		    if (mLocation != null)
 		    {
