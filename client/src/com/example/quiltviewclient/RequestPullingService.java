@@ -197,7 +197,7 @@ public class RequestPullingService extends IntentService {
 		            + DateFormat.format("MM/dd/yy h:mmaa", System.currentTimeMillis());
 		    Log.i(LOG_TAG, "Want to pull here." + resultTxt);
 		    
-		    getLocation();
+		    //getLocation();
 		    double latitude, longitude;
 		    if (mLocation != null)
 		    {
@@ -218,7 +218,7 @@ public class RequestPullingService extends IntentService {
 		    HttpURLConnection urlConnection = null;
 		    try {
 //			    URL url = new URL("http://typhoon.elijah.cs.cmu.edu:8000/latest/"
-			    URL url = new URL("http://quiltview.opencloudlet.org/latest/"
+			    URL url = new URL("http://23.21.103.195:8000/latest/"
 			    		+ "?user_id=" + mSerialNumber 
 			    		+ "&lat=" + latitude + "&lng=" + longitude);
 			    urlConnection = (HttpURLConnection) url.openConnection();
