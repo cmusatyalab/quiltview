@@ -1,2 +1,3 @@
 quiltview.conf should be placed in /etc/nginx/conf.d/
 quiltview.conf_supervisor should be placed in /etc/supervisor/conf.d/, named as quiltview.conf
+private and public key should be placed at /etc/nginx/ssl/
