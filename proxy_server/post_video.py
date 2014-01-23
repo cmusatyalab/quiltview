@@ -13,7 +13,7 @@ def post(global_url, resource_url, json_string):
     print params
 
     # this is only for https connection
-    conn = httplib.HTTPSConnection(end_point[1])
+    conn = httplib.HTTPConnection(end_point[1])
     conn.request("POST", "%s" % end_point[2], params, headers)
     response = conn.getresponse()
     data = response.read()
@@ -24,6 +24,6 @@ def post(global_url, resource_url, json_string):
 
 if __name__ == "__main__":
     # just for test
-    pprint(post("https://quiltview.opencloudlet.org", "/api/dm/user/", {"location_lat":"11.111111", "location_lng":"22.2222", "google_account":"wenlu.c.hu", "uuid":"0149B2851501001D"}))
+    #pprint(post("https://quiltview.opencloudlet.org", "/api/dm/user/", {"location_lat":"11.111111", "location_lng":"22.2222", "google_account":"wenlu.c.hu", "uuid":"0149B2851501001D"}))
     #pprint(post("http://typhoon.elijah.cs.cmu.edu:8000", "/api/dm/query/", {"requester":"/api/dm/user/1/", "latest_upload_time":"2013-09-26", "interest_location_lat":"11.111111", "interest_location_long":"22.2222", "time_out":5, "accepted_staleness":5, "reward":1}))
-    #pprint(post("http://typhoon.elijah.cs.cmu.edu:8000", "/api/dm/video/", {"url":"http://www.youtuble.com", "owner":"/api/dm/user/1/", "query":"/api/dm/query/1/", "upload_location_lat":"11.111111", "upload_location_long":"22.2222"}))
+    pprint(post("http://quiltview.opencloudlet.org", "/api/dm/video/", {"url":"http://www.youtube.com/watch?v=G5SKlOkHDgM", "owner":"/api/dm/user/6/", "query":"/api/dm/query/65/", "upload_location_lat":"11.111111", "upload_location_lng":"22.2222"}))

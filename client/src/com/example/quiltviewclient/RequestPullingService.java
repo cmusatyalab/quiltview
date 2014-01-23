@@ -224,8 +224,7 @@ public class RequestPullingService extends IntentService {
 		    
 		    HttpURLConnection urlConnection = null;
 		    try {
-//			    URL url = new URL("http://typhoon.elijah.cs.cmu.edu:8000/latest/"
-			    URL url = new URL("http://23.21.103.195:8000/latest/"
+			    URL url = new URL("http://quiltview.opencloudlet.org/latest/"
 			    		+ "?user_id=" + mSerialNumber 
 			    		+ "&lat=" + latitude + "&lng=" + longitude);
 			    urlConnection = (HttpURLConnection) url.openConnection();

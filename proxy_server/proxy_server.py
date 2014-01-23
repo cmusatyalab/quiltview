@@ -14,6 +14,7 @@ import post_video
 
 TMP_VIDEO_NAME = "uploaded_video"
 
+#QUILTVIEW_URL = "http://23.21.103.195:8000"
 QUILTVIEW_URL = "http://quiltview.opencloudlet.org"
 VIDEO_RESOURCE = "/api/dm/video/"
 
@@ -71,14 +72,14 @@ def serverNewClient(queue, options):
         while data: 
             try:
                 frame_len = struct.unpack("!I", data)[0]
-                print "Frame length = %d" % frame_len
+                #print "Frame length = %d" % frame_len
                 data = ""
                 received_len = 0
                 while received_len < frame_len:
                     data_tmp = conn.recv(frame_len - received_len)
                     data += data_tmp
                     received_len += len(data_tmp)
-                print "received %d bytes" % len(data)
+                print "received %d bytes at port %d" % (len(data), port)
                 frame = processFrame(data)
                 frames.append(frame)
                 data = conn.recv(4)
@@ -120,7 +121,7 @@ def serverNewClient(queue, options):
 
 def startServer(host, port, options):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, PORT))
+    s.bind((host, port))
     s.listen(0)
 
     queue = Manager().Queue()
