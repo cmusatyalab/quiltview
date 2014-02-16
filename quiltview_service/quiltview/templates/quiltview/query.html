@@ -95,13 +95,11 @@
     <hr>
     <form action="/query/" enctype="multipart/form-data" method="post" onsubmit="read_map()">
     {% csrf_token %}
-    <div class="row-fluid">
-      <div class="span3">
-        <b>Write your query below: </b>
-      </div>
-    </div>
+    <h3>Write your query below: </h3>
     <div class="fieldWrapper"> 
-      {{ form.query_content }} ?
+      <input type="text" class="input-xxlarge" name="query_content" placeholder="e.g. What is the weather">
+      <!-- {{ form.query_content }} -->
+      <b>?</b>
     </div>
     <div class="fieldWrapper" id='opt1'>
       <b>Timeout: </b> {{ form.time_out_n }} {{ form.time_out_unit }}
