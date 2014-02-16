@@ -215,6 +215,7 @@ public class StreamingThread extends Thread {
                 }
                 if (msg_in.what == CODE_SEND_STOP) { 
                 	try {
+                	    outStream.write(pack(77));
                 		//socket.close();
             	    	Log.i("sendVideo", "Exited the procedure normally.");
             		}

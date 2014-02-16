@@ -39,6 +39,15 @@ def processFrame(data):
 
     return frame
 
+def _receive_all(conn, target_len):
+    data = ""
+    received_len = 0
+    while received_len < target_len:
+        data_tmp = conn.recv(target_len - received_len)
+        data += data_tmp
+        received_len += len(data_tmp)
+    return data
+
 def serverNewClient(queue, options):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(("", 0))
@@ -67,18 +76,15 @@ def serverNewClient(queue, options):
 
         #video_file = open(TMP_VIDEO_NAME, 'w')
         frames = []
-        conn.settimeout(3)
-        data = conn.recv(4)
+        #conn.settimeout(3)
+        data = _receive_all(conn, 4)
         while data: 
             try:
                 frame_len = struct.unpack("!I", data)[0]
+                if frame_len == 77: # magic number for now
+                    break
                 #print "Frame length = %d" % frame_len
-                data = ""
-                received_len = 0
-                while received_len < frame_len:
-                    data_tmp = conn.recv(frame_len - received_len)
-                    data += data_tmp
-                    received_len += len(data_tmp)
+                data = _receive_all(conn, frame_len)
                 print "received %d bytes at port %d" % (len(data), port)
                 frame = processFrame(data)
                 frames.append(frame)
@@ -115,7 +121,7 @@ def serverNewClient(queue, options):
         post_video.post(QUILTVIEW_URL, VIDEO_RESOURCE, new_video_entry)
 
         # cleaning
-        os.remove(TMP_VIDEO_NAME + "%d.avi" % port)
+        #os.remove(TMP_VIDEO_NAME + "%d.avi" % port)
 
         break
 
