@@ -24,8 +24,11 @@
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             }
             map = new google.maps.Map(map_canvas, map_options)
+            var opt = { minZoom: 14, maxZoom: 17 };
+            map.setOptions(opt);
           }
           google.maps.event.addDomListener(window, 'load', initialize);
+
           function read_map() {
             var query_location = document.getElementById('query_location');
             var center = map.getCenter();
@@ -57,6 +60,7 @@
         {% endif %}
       </div>
     </header>
+
     <div id="map_canvas"></div>
     <form action="/query/" enctype="multipart/form-data" method="post" onsubmit="read_map()">
     {% csrf_token %}
