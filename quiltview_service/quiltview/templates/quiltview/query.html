@@ -7,6 +7,45 @@
     <link href="/static/assets/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="/static/assets/css/docs.css" rel="stylesheet">
     <link href="/static/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+      <style>
+          #map_canvas {
+            width: 500px;
+            height: 400px;
+          }
+      </style>
+      <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+      <script>
+          var map;
+          function initialize() {
+            var map_canvas = document.getElementById('map_canvas');
+            var map_options = {
+                center: new google.maps.LatLng(40.442758, -79.942338),
+                zoom: 14,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+            map = new google.maps.Map(map_canvas, map_options)
+          }
+          google.maps.event.addDomListener(window, 'load', initialize);
+          function read_map() {
+            var debug_output = document.getElementById('debug_output');
+            debug_output.innerHTML="Hello World";
+            var map_canvas = document.getElementById('map_canvas');
+            //var zoom = map_canvas.gmap('option', 'zoom');
+            //debug_output.innerHTML=zoom;
+            var query_location = document.getElementById('query_location');
+            var center = map.getCenter();
+            var bounds = map.getBounds();
+            var NE = bounds.getNorthEast();
+            var SW = bounds.getSouthWest();
+            query_location.value = "https://maps.google.com/?" +
+                "ll=" + center.lat() + "," + center.lng()  + 
+                "&spn=" + (NE.lat()-SW.lat()).toString() + "," + (NE.lng()-SW.lng()).toString() + 
+                "&z=" + map.getZoom();
+            //Wenlu Test
+            //query_location.value = "https://maps.google.com/?ll=40.443501,-79.94251&spn=0.010974,0.021222&t=m&z=16";
+            alert(query_location.value);
+          }
+      </script>
   </head>
 
   <body>
@@ -25,6 +64,9 @@
         {% endif %}
       </div>
     </header>
+    <div id="debug_output"> DEBUG </div>
+    <button type="button" onclick="read_map()">Read Map</button>
+    <div id="map_canvas"></div>
     <form action="/query/" enctype="multipart/form-data" method="post">
     {% csrf_token %}
     <div class="row-fluid">
@@ -33,7 +75,7 @@
       </div>
     </div>
     <div class="fieldWrapper"> 
-      {{ form.query_content }} at {{ form.query_location}} ?
+      {{ form.query_content }} ?
     </div>
     <div class="fieldWrapper">
       <b>Timeout: </b> {{ form.time_out_n }} {{ form.time_out_unit }}
@@ -52,6 +94,7 @@
     </div>
     </p>
     <input type="hidden" name="user_email" value="{{ user.email }}" />
+    <input type="hidden" name="query_location" id="query_location"/>
     <p>
       <button class="btn" type="submit" name="post" value="False">Check existing</button>
       <button class="btn btn-primary" type="submit" name="post" value="True">Submit</button>
