@@ -45,11 +45,12 @@ public class RespondActivity extends Activity {
 	
 	private static final int LOCAL_OUTPUT_BUFF_SIZE = 1024 * 100;
 	
-	private boolean hasStarted = false;
+	private volatile boolean hasStarted = false;
 	
 	private UploadingThread uploadingThread = null;
 	
 	private Timer auto_destroy_timer = null;
+	private Timer record_timer = null;
 
 	Uri mVideoUri = null;
 	String mVideoPath = null;
@@ -89,10 +90,11 @@ public class RespondActivity extends Activity {
         auto_destroy_timer.schedule(new TimerTask() {          
             @Override
             public void run() {
-                finish();
+                if (!hasStarted) {
+                    finish();
+                }
             }
-            
-        }, 30000);  // vanish after several seconds sec
+        }, 10000);  // vanish after several seconds sec
 	}
 
 	@Override
@@ -214,14 +216,9 @@ public class RespondActivity extends Activity {
                 
                 Log.v("OnPreviewCallBack", "sent a message");
                 streamingHandler.sendMessage(msg_out);
-                if (System.currentTimeMillis() - startedTime > 5 * 1000) {
-                	hasStarted = false;
-                	msg_out = Message.obtain();
-                	msg_out.what = StreamingThread.CODE_SEND_STOP;
-                	streamingHandler.sendMessage(msg_out);
-                	streamingThread = null;
-                	finish();
-                }
+//                if (System.currentTimeMillis() - startedTime > 5 * 1000) {
+//                	
+//                }
             }
         }
     };
@@ -298,8 +295,19 @@ public class RespondActivity extends Activity {
         msg_out.setData(data);
         streamingHandler.sendMessage(msg_out);
         
-        startedTime = System.currentTimeMillis();
         hasStarted = true;
+        auto_destroy_timer = new Timer();
+        auto_destroy_timer.schedule(new TimerTask() {          
+            @Override
+            public void run() {
+                hasStarted = false;
+                Message msg_out = Message.obtain();
+                msg_out.what = StreamingThread.CODE_SEND_STOP;
+                streamingHandler.sendMessage(msg_out);
+                streamingThread = null;
+                finish();
+            }
+        }, 5000);  // vanish after several seconds sec
 //        record_button.setVisibility(View.GONE);
         
 //        try
