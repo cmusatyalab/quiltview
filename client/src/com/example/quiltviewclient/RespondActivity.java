@@ -1,12 +1,10 @@
 package com.example.quiltviewclient;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -33,7 +31,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import com.google.android.gms.plus.model.people.Person.Image;
 import com.google.android.youtube.player.YouTubeIntents;
 
 
@@ -51,6 +48,8 @@ public class RespondActivity extends Activity {
 	private boolean hasStarted = false;
 	
 	private UploadingThread uploadingThread = null;
+	
+	private Timer auto_destroy_timer = null;
 
 	Uri mVideoUri = null;
 	String mVideoPath = null;
@@ -66,14 +65,12 @@ public class RespondActivity extends Activity {
 		setContentView(R.layout.activity_respond);
 
         extractAndDisplayQuery();
-
-
 	      
         // Launching Camera App using voice command need to wait.  
         // See more at https://code.google.com/p/google-glass-api/issues/list
-        try {
-        	Thread.sleep(1000);
-        } catch (InterruptedException e) {}
+//        try {
+//        	Thread.sleep(1000);
+//        } catch (InterruptedException e) {}
         
 		// Create an instance of Camera
         mCamera = Camera.open();
@@ -87,8 +84,15 @@ public class RespondActivity extends Activity {
         view_camera = (FrameLayout)findViewById(R.id.camera_preview);
         view_camera.setVisibility(View.INVISIBLE);
         view_camera.addView(mPreview);
-
-
+        
+        auto_destroy_timer = new Timer();
+        auto_destroy_timer.schedule(new TimerTask() {          
+            @Override
+            public void run() {
+                finish();
+            }
+            
+        }, 30000);  // vanish after several seconds sec
 	}
 
 	@Override
@@ -104,6 +108,12 @@ public class RespondActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+	private Runnable vanish_task = new Runnable() {
+        public void run() {
+            finish();
+        }
+    };
 	
 	String mQuery = null;
 	int mQueryID = -1;

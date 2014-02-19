@@ -42,7 +42,6 @@ public class RequestPullingService extends IntentService {
 	  public void onCreate() {
 		  super.onCreate();
 	      locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		  
 	  }
 
 	  /**
@@ -202,7 +201,7 @@ public class RequestPullingService extends IntentService {
 	    private void pullRequest() {
 	        String resultTxt = " "
 		            + DateFormat.format("MM/dd/yy h:mmaa", System.currentTimeMillis());
-		    Log.i(LOG_TAG, "Want to pull here." + resultTxt);
+		    Log.i(LOG_TAG, "Begin pull." + resultTxt);
 		    
 		    getLocation();
 		    double latitude, longitude;
@@ -217,10 +216,8 @@ public class RequestPullingService extends IntentService {
 		    	latitude = 40.443469; //40.44416720;
 		    	longitude = -79.943862; //-79.94336060;
 		    }
-		    
-		    	Log.i(LOG_TAG, "Location: " + latitude 
-		    			+ ", " + longitude);
-		    //TODO Send location with pull request
+	    	Log.i(LOG_TAG, "Location: " + latitude 
+	    			+ ", " + longitude);
 		    
 		    HttpURLConnection urlConnection = null;
 		    try {
@@ -242,20 +239,17 @@ public class RequestPullingService extends IntentService {
 		        	String jsonString = new String(jsonBuffer, "UTF-8");
 		        	Log.i(LOG_TAG, "Got response: " + jsonString);
 		        	
-		        	//Decode json file
-//		        	 String jsonString = "{\"content\": \"What is the weather at Pittsburgh?\"}";
-		                
 		        	try {
-		        	  JSONObject obj= (JSONObject) JSONValue.parse(jsonString);
-		        	  //Log.i(LOG_TAG, obj.getClass().toString());
-		        	  String query = obj.get("content").toString();
-		        	  int queryID = Integer.parseInt(obj.get("query_id").toString());
-		        	  int userID = Integer.parseInt(obj.get("user_id").toString());
-		        	  String imagePath = obj.get("image").toString();
-		        	  Log.i(LOG_TAG, userID + ", " + queryID + ": " + query + "&" + imagePath);    
-		        	  imagePath = saveImageToLocal(imagePath);
-		        	  
-		        	  recordForQuery(query, queryID, userID, imagePath);
+                        JSONObject obj= (JSONObject) JSONValue.parse(jsonString);
+                        //Log.i(LOG_TAG, obj.getClass().toString());
+                        String query = obj.get("content").toString();
+                        int queryID = Integer.parseInt(obj.get("query_id").toString());
+                        int userID = Integer.parseInt(obj.get("user_id").toString());
+                        String imagePath = obj.get("image").toString();
+                        Log.i(LOG_TAG, userID + ", " + queryID + ": " + query + "&" + imagePath);    
+                        imagePath = saveImageToLocal(imagePath);
+
+                        recordForQuery(query, queryID, userID, imagePath);
 		        	} catch (NullPointerException ex) {
 		        		Log.i(LOG_TAG, "No valid query");
 		        	}
@@ -274,7 +268,6 @@ public class RequestPullingService extends IntentService {
 		    	if (urlConnection != null)
 		    		urlConnection.disconnect();
 		    }
-		    
 		    
 	    }
 	}	
