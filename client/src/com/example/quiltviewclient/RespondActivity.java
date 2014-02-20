@@ -101,7 +101,10 @@ public class RespondActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		Log.d("OnDestroy", "prepare to exit activity");
-		mCamera.release();
+		if (mCamera != null) {
+		    mCamera.release();
+		    mCamera = null;
+		}
 	}
 	
 	@Override
