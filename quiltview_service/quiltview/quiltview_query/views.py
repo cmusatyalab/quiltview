@@ -80,6 +80,7 @@ def query(request):
     global query_deliver
 
     '''
+    # below is kind of a more standard way to deal with forms in Django, haven't integrate them yet
     if request.method == 'POST':
         form = QueryForm(request.POST)
         if form.is_valid():
@@ -122,7 +123,7 @@ def query(request):
     req_reward = request.POST['reward']
     req_expected_reply = request.POST['expected_reply']
 
-    if request.POST['post']=="True":  # add a new query
+    if request.POST['post'] == "True":  # add a new query
         # check if the user has logged in
         user_email = request.POST['user_email']
         if not user_email:
@@ -157,8 +158,8 @@ def query(request):
             query.reward = int(req_reward)
 
         # check cache based on time
-        matched_queries = Query.objects.filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))\
-                                       .filter(interest_location_lat = lat).filter(interest_location_lng = lng).filter(interest_location_span_lat = s_lat).filter(interest_location_span_lng = s_lng)
+        matched_queries = Query.objects.filter(requested_time__gte = query.requested_time - datetime.timedelta(seconds = query.accepted_staleness))
+                                       #.filter(interest_location_lat = lat).filter(interest_location_lng = lng).filter(interest_location_span_lat = s_lat).filter(interest_location_span_lng = s_lng)
         # detect similarity
         closest_queries = []
         for matched_query in matched_queries.all():

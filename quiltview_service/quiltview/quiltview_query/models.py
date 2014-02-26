@@ -33,7 +33,7 @@ class User(models.Model):
     other_preferences = models.CharField(max_length = 255, null=True, blank=True)  # has a risk of exceeding MySQL's max_length of VARCHAR field
 
     def __unicode__(self):
-        return self.google_account
+        return unicode(self.google_account)
 
     def save(self, *args, **kwargs):
          self.location_update_time = timezone.now()
