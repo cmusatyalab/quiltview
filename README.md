@@ -130,6 +130,8 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     sudo ../../ENV/bin/python manage.py runserver 0.0.0.0:80
     ```
 
+8. Sign in...
+
 ## Setting up client
 
     To come soon...

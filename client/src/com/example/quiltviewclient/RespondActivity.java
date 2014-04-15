@@ -66,13 +66,7 @@ public class RespondActivity extends Activity {
 		setContentView(R.layout.activity_respond);
 
         extractAndDisplayQuery();
-	      
-        // Launching Camera App using voice command need to wait.  
-        // See more at https://code.google.com/p/google-glass-api/issues/list
-//        try {
-//        	Thread.sleep(1000);
-//        } catch (InterruptedException e) {}
-        
+
 		// Create an instance of Camera
         mCamera = Camera.open();
         Log.i("OnCreate", "camera opened");
@@ -94,7 +88,7 @@ public class RespondActivity extends Activity {
                     finish();
                 }
             }
-        }, 10000);  // vanish after several seconds sec
+        }, 10000);  // vanish after several seconds
 	}
 
 	@Override
