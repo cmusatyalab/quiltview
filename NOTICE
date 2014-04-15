@@ -11,7 +11,11 @@ Copyright 2013-2014 Carnegie Mellon University
     The upload-to-Youtube code in python at proxy is modified from the sample code at Google's developer website. The sample code is licensed under the Apache v2 License. The sample code is available from:
         https://developers.google.com/youtube/v3/guides/uploading_a_video
 
-    The Mozilla Persona sign in support in the Django-based webserver is provided byt the Django-browserid library package, which is open source software, currently maintained by Michael Kelly, Will Kahn-Greene, and Peter Bengtsson. Django-browserid is licensed under the Mozilla Public License. Django-browserid is available from:
+    Boostrap website theme is provided by the Bootstrap library package, with is open source software, written by Mark Otto, and copyright is held by him. Boostrap code is licensed under Apached v2 License. Boostrap is available from:
+        https://github.com/twbs/bootstrap
+        project website: http://getbootstrap.com/
+
+    The Mozilla Persona sign in support in the Django-based webserver is provided by the Django-browserid library package, which is open source software, currently maintained by Michael Kelly, Will Kahn-Greene, and Peter Bengtsson. Django-browserid is licensed under the Mozilla Public License. Django-browserid is available from:
         https://github.com/mozilla/django-browserid
 
     The language similarity detection support in Python is provided by the gensim library package, which is open source software, written by Radim Rehurek, and copyright is held by him. gensim is licensed under the LGPL. gensim is available from:

@@ -27,9 +27,87 @@ The system currently consists of three components. You can find the source code 
 ## Tested Platforms
 Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
-## Installing Server
-1. Install dependencies
+## Setting Up Server
 
+0. Go to the server directory
+
+    ```bash
+    cd QUILTVIEW_ROOT/quiltview_service/quiltview/
+    ```
+
+1. Install system libraries
+
+    ```bash
+    sudo apt-get git python-pip mysql-server mysql-client libmysqlclient-dev python-dev python-gflags libblas-dev libatlas-dev liblapack-dev python-numpy pyton-scipy gfortran libevent-dev
+    sudo apt-get upgrade gcc
+    ```
+
+2. Set up virtual environment
+    
+    ```bash
+    sudo pip install virtualenv
+    virtualenv --system-site-packages ENV
+    source ENV/bin/activate
+    ```
+
+3. Install python libraries
+
+    ```bash
+    pip install -r PIP_LIB
+    ```
+
+4. Set up database (now you should have mysql installed and running)
+
+    ```bash
+    mysql -u root
+    CREATE USER 'quiltview'@'localhost' IDENTIFIED BY 'quiltview2013';
+    CREATE DATABASE quiltview;
+    GRANT ALL ON *.* TO quiltview@localhost;
+    FLUSH PRIVILEGES;
+    ```
+
+    To check if database is correctly created, do
+
+    ```bash
+    mysql -u quiltview -p
+    show databases;
+    ```
+
+    Now sync database from Django to mysql
+
+    ```bash
+    ./manage.py syncdb
+    ```
+
+5. Configure Django
+
+    *Change the hardcoded path in quiltview/settings.py to the right value (uh...)
+
+    Create folders for static files
+
+    ```bash
+    mkdir STATIC_DIRS STATIC_ROOT
+    ```
+
+    Download boostrap, unzip it, and put it under STATIC_DIRS
+
+    Collect static files for Django
+
+    ```bash
+    ./manage.py collectstatic
+    ```
+
+# Setting up client
+
+    To come soon...
+
+# Setting up proxy
+
+    To come soon...
+
+# Setting up virtual user
+
+    To come soon...
 
 Four initial users:
 wenlu.c.hu@gmail.com 015DA6FC1900A01F 
