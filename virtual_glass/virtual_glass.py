@@ -39,7 +39,7 @@ class VirtualUser(multiprocessing.Process):
 
     def register(self, uid, uemail, dailyLimit) :
         print "Register #%s %s" % (uid, uemail)
-        prefDic = {'min_reward': 5, 
+        prefDic = {'min_reward': 1, 
                    'active_hours' : '9am-5pm' }
         preference = json.dumps(prefDic)
         pprint(post_video.post(QUILTVIEW_URL, "/api/dm/user/", {"location_lat":"0", "location_lng":"0", "google_account":uemail, "uuid":uid, "max_upload_time": dailyLimit, "other_preferences":preference}))
@@ -49,6 +49,8 @@ class VirtualUser(multiprocessing.Process):
         videoID = random.randint(0,4)
         FAKE_VIDEO_NAME = "fakevideo" + str(videoID) + ".mp4"
         print "Uploading " + FAKE_VIDEO_NAME + " to YouTube..."
+        
+        #This uploading code is copied from the main function in proxy_server/upload_youtube
         from optparse import OptionParser
         parser = OptionParser()
         parser.add_option("--file", dest="file", help="Video file to upload",
@@ -73,7 +75,7 @@ class VirtualUser(multiprocessing.Process):
                            "query" : "/api/dm/query/%d/" % query_id, 
                            "upload_location_lat" : "11.111111",
                            "upload_location_lng" : "22.2222"
-                          }  # some fields are random for now
+                          }  # TODO some fields are random for now
         post_video.post(QUILTVIEW_URL, VIDEO_RESOURCE, new_video_entry)
 
     def pullAndRespond(self):
@@ -97,7 +99,6 @@ class VirtualUser(multiprocessing.Process):
             user_id = json_result['user_id']
             print "Got a response. Upload to Youtube"
             #Upload video to Youtube
-            #respondProb = 0.5
             rolldice = random.random() #[0.0, 1.0)
             if (rolldice < self.respondProb) :
                 print "Decided to respond"
@@ -112,14 +113,20 @@ def create():
     <google map link> example
     https://maps.google.com/?ll=40.442758,-79.942338&spn=0.00743,0.015814&t=m&z=17
     '''
-    if len(sys.argv) != 6 :
-        print usage
-        exit(0)
-    else :
-        nUser = int (sys.argv[2])
-        dailyLimit = int (sys.argv[3])
-        mapUrl = sys.argv[4]
-        respondProb = float (sys.argv[5])
+    import argparse
+    parser = argparse.ArgumentParser(description = "Virtual Glass User Create")
+    parser.add_argument('create', type=str, metavar='create')
+    parser.add_argument('nUser', type=int, metavar='nUser', help='Number of Users')
+    parser.add_argument('dailyLimit', type=int, metavar='dailyLimit', help='Max number of queries you want to receive per day.')
+    parser.add_argument('mapUrl',type=str, metavar='googleMapURL', help='A link of Google map related to the interested area')
+    parser.add_argument('--Prob', type=float, dest='respondProb', metavar='respondProb', help='The probability of responding to each query. default=100% ', default=1.0)
+
+    args = parser.parse_args()
+
+    nUser = args.nUser 
+    dailyLimit = int(args.dailyLimit) 
+    mapUrl = args.mapUrl 
+    respondProb = float (args.respondProb)
 
     from urlparse import urlparse
     from urlparse import parse_qs
