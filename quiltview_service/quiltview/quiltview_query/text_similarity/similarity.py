@@ -7,8 +7,8 @@ from django.conf import settings
 
 MODEL_DIR = os.path.join(settings.DJANGO_ROOT, "quiltview_query", "text_similarity")
 
-id2word = gensim.corpora.Dictionary.load_from_text(MODEL_DIR + 'wiki_en_wordids.txt')
-lda = gensim.models.LdaModel.load(MODEL_DIR + 'model.lda')
+id2word = gensim.corpora.Dictionary.load_from_text(os.path.join(MODEL_DIR, 'wiki_en_wordids.txt'))
+lda = gensim.models.LdaModel.load(os.path.join(MODEL_DIR, 'model.lda'))
 
 def calc_similarity(doc1, doc2):
     # load id->word mapping (the dictionary), one of the results of step 2 above
