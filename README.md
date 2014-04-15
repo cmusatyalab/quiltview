@@ -90,8 +90,6 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
 5. Configure Django
 
-    *Change the hardcoded path in quiltview/settings.py to the right value (uh...)
-
     Create folders for static files
 
     ```bash
@@ -119,6 +117,17 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
     ```bash
     ./manage.py collectstatic
+    ```
+
+6. Get models for text similarity detection
+
+    wiki_en_wordids.txt
+    model.lda
+
+7. Run server
+
+    ```bash
+    sudo ../../ENV/bin/python manage.py runserver 0.0.0.0:80
     ```
 
 ## Setting up client
