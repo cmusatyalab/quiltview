@@ -3,10 +3,8 @@
   <head>
     <title>QuiltView</title>
     <!-- Bootstrap -->
-    <link href="/static/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/static/assets/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="/static/assets/css/docs.css" rel="stylesheet">
-    <link href="/static/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <style>
         #map_canvas {
           width: 500px;
@@ -19,7 +17,7 @@
         function initialize() {
           var map_canvas = document.getElementById('map_canvas');
           var map_options = {
-              center: new google.maps.LatLng(34.4176237,-119.6701138),
+              center: new google.maps.LatLng(40.443946,-79.942205),
               zoom: 16,
               mapTypeId: google.maps.MapTypeId.ROADMAP
           }
@@ -167,7 +165,7 @@
     {% endif %}
 
     <script src="https://code.jquery.com/jquery-latest.js"></script>
-    <script src="/static/assets/js/bootstrap.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.js"></script>
     <script src="https://login.persona.org/include.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {

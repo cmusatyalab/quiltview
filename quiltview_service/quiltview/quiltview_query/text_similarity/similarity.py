@@ -1,12 +1,14 @@
 import sys
-import logging, gensim, bz2
+import gensim
 import re
-#logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+import os
 
-MODEL_DIR = "/home/ubuntu/quiltview/quiltview_service/quiltview/quiltview_query/text_similarity/"
+from django.conf import settings
 
-id2word = gensim.corpora.Dictionary.load_from_text(MODEL_DIR + 'wiki_en_wordids.txt')
-lda = gensim.models.LdaModel.load(MODEL_DIR + 'model.lda')
+MODEL_DIR = os.path.join(settings.DJANGO_ROOT, "quiltview_query", "text_similarity")
+
+id2word = gensim.corpora.Dictionary.load_from_text(os.path.join(MODEL_DIR, 'wiki_en_wordids.txt'))
+lda = gensim.models.LdaModel.load(os.path.join(MODEL_DIR, 'model.lda'))
 
 def calc_similarity(doc1, doc2):
     # load id->word mapping (the dictionary), one of the results of step 2 above

@@ -174,7 +174,7 @@ def query(request):
 
         query.save()
 
-        # handle uploaed file
+        # handle uploaded file
         handle_uploaded_file(request.FILES.get('upload_file', None))
 
         if query.cache_hit and (not query.reload_query):    # cache hit
