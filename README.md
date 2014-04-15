@@ -86,6 +86,8 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     ./manage.py syncdb
     ```
 
+    In the syncing process, you probably will be asked to create a superuser for Django's auth system, just follow the instructions.
+
 5. Configure Django
 
     *Change the hardcoded path in quiltview/settings.py to the right value (uh...)
@@ -96,9 +98,24 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     mkdir STATIC_DIRS STATIC_ROOT
     ```
 
-    Download boostrap, unzip it, and put it under STATIC_DIRS
+    Download boostrap, unzip it, and put it under STATIC_DIRS. 
 
-    Collect static files for Django
+    We are using Bootstrap version 2. A link to download is at
+
+    ```bash
+    http://getbootstrap.com/2.3.2/assets/bootstrap.zip
+    ```
+
+    So you can probably do
+
+    ```bash
+    wget http://getbootstrap.com/2.3.2/assets/bootstrap.zip -P STATIC_DIRS/
+    sudo apt-get install unzip
+    unzip STATIC_DIRS/bootstrap.zip -d STATIC_DIRS/
+    rm STATIC_DIRS/bootstrap.zip
+    ```
+
+    Now collect static files for Django
 
     ```bash
     ./manage.py collectstatic
