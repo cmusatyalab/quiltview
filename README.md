@@ -1,3 +1,33 @@
+# QuiltView: a Crowd-Sourced Video Response System
+
+## What is QuiltView?
+
+QuiltView is a crowd-sourced video response system based on smart glasses such as [Google Glass](http://www.google.com/glass). Specifically, it leverages the ability of capturing first-person view-point video with effortless one-touch in such Glass devices. The extreme simplicity of video capture can be used to create a new near-real-time social network. In this network, users can pose brief queries to other users in a specific geographic area and receive prompt video responses. The richness of video content provides much detail and context to the person posing the query, while consuming little attention from those who respond. The QuiltView architecture incorporates result caching, geolocation and query similarity detection to shield users from being overwhelmed by a flood of queries. More detailed information can be found in [this paper](http://www.cs.cmu.edu/~zhuoc/papers/quiltview_HotMobile2014.pdf)
+
+## License
+
+All source code, documentation, and related artifacts associated with the
+QuiltView open source project are licensed under the [Apache License, Version
+2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
+
+A copy of this license is reproduced in the [LICENSE](LICENSE) file, and the
+licenses of dependencies and included code are mentioned in the
+[NOTICE](NOTICE) file.
+
+## System Components and Workflow
+
+The system currently consists of three components. You can find the source code for each component accordingly:
+1. `server` under `/quiltview-service` - This is the part you should run it on a global server. It comes with a web interface so you can post your queries there. The server will deliver queries to clients and receive video responses back. The server stores the videos (at least for some time) to serve as a cache to shortcuit future queries.
+2. `client` under `/client` - This is the Android code you should run on a Google Glass. When the Glass receives a query, it will pop up and the user can simply reply with a short video with one touch. The video will be uploaded to Youtube and the Metadata about the video, including the Youtube link, will be stored in our QuiltView server. If the user does not reply within 10 seconds, the query will disappear.
+3. `proxy` under `proxy_server` - This piece exists only because we cannot find a way to store a recorded video on Glass disk with customized application. So what we do now is to stream the frames from client to the proxy, store the video there, and upload it to Youtube from proxy.
+
+## Tested Platforms
+Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
+
+## Installing Server
+1. Install dependencies
+
+
 Four initial users:
 wenlu.c.hu@gmail.com 015DA6FC1900A01F 
 zhuoc@cs.cmu.edu 0149C25E0601C019
