@@ -1,0 +1,22 @@
+=========================================================================
+==  NOTICE file for the QuiltView open source research project          ==
+=========================================================================
+
+QuiltView 
+Copyright 2013-2014 Carnegie Mellon University
+
+    JSON support in Android code is provided by the json-simple library package, which is open source software, written by Yidong Fang, and copy right is held by them. json-simple is licensed under the Apache v2 License. json-simple is available from:
+        https://code.google.com/p/json-simple/
+
+    The upload-to-Youtube code in python at proxy is modified from the sample code at Google's developer website. The sample code is licensed under the Apache v2 License. The sample code is available from:
+        https://developers.google.com/youtube/v3/guides/uploading_a_video
+
+    The Mozilla Persona sign in support in the Django-based webserver is provided byt the Django-browserid library package, which is open source software, currently maintained by Michael Kelly, Will Kahn-Greene, and Peter Bengtsson. Django-browserid is licensed under the Mozilla Public License. Django-browserid is available from:
+        https://github.com/mozilla/django-browserid
+
+    The language similarity detection support in Python is provided by the gensim library package, which is open source software, written by Radim Rehurek, and copyright is held by him. gensim is licensed under the LGPL. gensim is available from:
+        https://github.com/piskvorky/gensim
+        project website: http://radimrehurek.com/gensim/about.html
+
+There are other libraries not listed here which QuiltView depends on. Please refer to the PIP_LIB file for python libraries and library_log file for others. 
+    
