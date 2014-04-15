@@ -51,16 +51,16 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     source ENV/bin/activate
     ```
 
-    Now you can go to the server directory
-
-    ```bash
-    cd quiltview_service/quiltview/
-    ```
-
 3. Install python libraries
 
     ```bash
     pip install -r PIP_LIB
+    ```
+
+    Now you can go to the server directory
+
+    ```bash
+    cd quiltview_service/quiltview/
     ```
 
 4. Set up database (now you should have mysql installed and running)
