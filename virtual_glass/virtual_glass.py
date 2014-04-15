@@ -7,10 +7,10 @@ import json
 import requests
 from pprint import pprint
 import csv
-import upload_youtube
 
 sys.path.insert(0, '../proxy_server/')
 import post_video
+import upload_youtube
 
 QUILTVIEW_URL = "http://quiltview.opencloudlet.org"
 VIDEO_RESOURCE = "/api/dm/video/"
