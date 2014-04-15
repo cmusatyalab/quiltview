@@ -32,14 +32,15 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 0. Go to the server directory
 
     ```bash
-    cd QUILTVIEW_ROOT/quiltview_service/quiltview/
+    cd QUILTVIEW_ROOT
     ```
 
 1. Install system libraries
 
     ```bash
-    sudo apt-get install python-pip mysql-server mysql-client libmysqlclient-dev python-dev python-gflags libblas-dev libatlas-dev liblapack-dev python-numpy pyton-scipy gfortran libevent-dev
-    sudo apt-get upgrade gcc
+    sudo apt-get update
+    sudo apt-get upgrade
+    sudo apt-get install python-pip mysql-server mysql-client libmysqlclient-dev python-dev python-gflags libblas-dev libatlas-dev liblapack-dev python-numpy python-scipy gfortran libevent-dev
     ```
 
 2. Set up virtual environment
@@ -48,6 +49,12 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     sudo pip install virtualenv
     virtualenv --system-site-packages ENV
     source ENV/bin/activate
+    ```
+
+    Now you can go to the server directory
+
+    ```bash
+    cd quiltview_service/quiltview/
     ```
 
 3. Install python libraries
