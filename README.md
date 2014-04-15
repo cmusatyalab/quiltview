@@ -38,7 +38,7 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 1. Install system libraries
 
     ```bash
-    sudo apt-get git python-pip mysql-server mysql-client libmysqlclient-dev python-dev python-gflags libblas-dev libatlas-dev liblapack-dev python-numpy pyton-scipy gfortran libevent-dev
+    sudo apt-get install python-pip mysql-server mysql-client libmysqlclient-dev python-dev python-gflags libblas-dev libatlas-dev liblapack-dev python-numpy pyton-scipy gfortran libevent-dev
     sudo apt-get upgrade gcc
     ```
 
@@ -97,15 +97,15 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     ./manage.py collectstatic
     ```
 
-# Setting up client
+## Setting up client
 
     To come soon...
 
-# Setting up proxy
+## Setting up proxy
 
     To come soon...
 
-# Setting up virtual user
+## Setting up virtual user
 
     To come soon...
 
