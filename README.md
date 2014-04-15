@@ -17,8 +17,11 @@ licenses of dependencies and included code are mentioned in the
 ## System Components and Workflow
 
 The system currently consists of three components. You can find the source code for each component accordingly:
+
 1. `server` under `/quiltview-service` - This is the part you should run it on a global server. It comes with a web interface so you can post your queries there. The server will deliver queries to clients and receive video responses back. The server stores the videos (at least for some time) to serve as a cache to shortcuit future queries.
+
 2. `client` under `/client` - This is the Android code you should run on a Google Glass. When the Glass receives a query, it will pop up and the user can simply reply with a short video with one touch. The video will be uploaded to Youtube and the Metadata about the video, including the Youtube link, will be stored in our QuiltView server. If the user does not reply within 10 seconds, the query will disappear.
+
 3. `proxy` under `proxy_server` - This piece exists only because we cannot find a way to store a recorded video on Glass disk with customized application. So what we do now is to stream the frames from client to the proxy, store the video there, and upload it to Youtube from proxy.
 
 ## Tested Platforms
