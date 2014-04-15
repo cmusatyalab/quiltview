@@ -1,4 +1,7 @@
 # Django settings for quiltview project.
+import os
+
+DJANGO_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -61,7 +64,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = '/home/ubuntu/quiltview/quiltview_service/quiltview/STATIC_ROOT'
+STATIC_ROOT = os.path.join(DJANGO_ROOT, 'STATIC_ROOT')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -73,7 +76,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     #'/home/zhuoc/Workspace/quiltview/quiltview_service/quiltview/STATIC_DIRS',
-    '/home/ubuntu/quiltview/quiltview_service/quiltview/STATIC_DIRS',
+    os.path.join(DJANGO_ROOT, 'STATIC_DIRS'),
 )
 
 # List of finder classes that know how to find static files in
@@ -114,7 +117,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     #'/home/zhuoc/Workspace/quiltview/quiltview_service/quiltview/templates',
-    '/home/ubuntu/quiltview/quiltview_service/quiltview/templates',
+    os.path.join(DJANGO_ROOT, 'templates'),
 )
 
 INSTALLED_APPS = (
@@ -179,7 +182,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 # Set your site url for security
-#SITE_URL = 'http://typhoon.elijah.cs.cmu.edu:8000'
 SITE_URL = 'http://quiltview.opencloudlet.org'
 BROWSERID_CREATE_USER = True
 
@@ -189,18 +191,11 @@ BROWSERID_CREATE_USER = True
 LOGIN_REDIRECT_URL = 'http://quiltview.opencloudlet.org'
 
 # Path to redirect to on unsuccessful login attempt.
-LOGIN_REDIRECT_URL_FAILURE = 'https://quiltview.opencloudlet.org/fake'
+LOGIN_REDIRECT_URL_FAILURE = 'http://quiltview.opencloudlet.org/fake'
 
 # Path to redirect to on logout.
-LOGOUT_REDIRECT_URL = 'https://quiltview.opencloudlet.org'
+LOGOUT_REDIRECT_URL = 'http://quiltview.opencloudlet.org'
 
 SESSION_COOKIE_SECURE = False
-
-#CACHES = {
-#    'default': {
-#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#        'LOCATION': 'unique-snowflake'
-#    }
-#}
 
 API_LIMIT_PER_PAGE = 50
