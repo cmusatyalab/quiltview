@@ -5,10 +5,12 @@ import time
 import multiprocessing
 import json
 import requests
-import post_video
 from pprint import pprint
 import csv
 import upload_youtube
+
+sys.path.insert(0, '../proxy_server/')
+import post_video
 
 QUILTVIEW_URL = "http://quiltview.opencloudlet.org"
 VIDEO_RESOURCE = "/api/dm/video/"

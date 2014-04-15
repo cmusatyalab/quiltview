@@ -1,3 +1,4 @@
+#!/bin/bash
 python virtual_glass.py stopall
 python virtual_glass.py killall
 
