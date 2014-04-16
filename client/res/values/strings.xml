@@ -9,6 +9,6 @@
     <string name="button_pull">Pull</string>
 
     <!-- Glass Launch-related strings. -->
-    <string name="start_quiltview_voice_trigger">start QuiltView</string>
+    <string name="start_quiltview_voice_trigger">Start Quiltview</string>
 
 </resources>
