@@ -1,5 +1,29 @@
 package com.example.quiltviewclient;
 
+/**
+* Quiltview - CMU 2013
+* Author: Wenlu Hu <wenlu@cmu.edu>
+* 
+* Copyright (C) 2011-2013 Carnegie Mellon University
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+*
+* You may obtain a copy of the License at
+*
+*       http://www.apache.org/licenses/LICENSE-2.0
+*
+*   Unless required by applicable law or agreed to in writing, software
+*   distributed under the License is distributed on an "AS IS" BASIS,
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and
+*   limitations under the License.
+*   
+* The RequestPullingService class is built upon sample codes from "Training 
+* for Android developers", which can be found at 
+* https://developer.android.com/training/run-background-service/create-service.html
+*/ 
+
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -24,16 +48,10 @@ import android.os.SystemClock;
 import android.text.format.DateFormat;
 import android.util.Log;
 
-import com.example.quiltviewclient.MainActivity.ResponseReceiver;
-
 public class RequestPullingService extends IntentService {
 
 	private final String LOG_TAG = "Pulling Thread";
 	
-	  /** 
-	   * A constructor is required, and must call the super IntentService(String)
-	   * constructor with a name for the worker thread.
-	   */
 	  public RequestPullingService() {
 	      super("RequestPullingService");
 	  }
@@ -44,16 +62,10 @@ public class RequestPullingService extends IntentService {
 	      locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 	  }
 
-	  /**
-	   * The IntentService calls this method from the default worker thread with
-	   * the intent that started the service. When this method returns, IntentService
-	   * stops the service, as appropriate.
-	   */
 	    public static final String PARAM_IN_MSG = "imsg";
 	    public static final String PARAM_OUT_MSG = "omsg";
 	    private static final int PullRequestLimit = 10;
 	    private static final boolean InfiniteLoop = true;
-	    private static final int PretendReceivingRequest = 3;
 	    
 	    private String mSerialNumber = null;  
 	    
@@ -71,23 +83,15 @@ public class RequestPullingService extends IntentService {
 		        SystemClock.sleep(3000); // 3 seconds
 		        pullRequest();
 		        count ++;
-		        
-//		        if (count == PretendReceivingRequest) {
-		        	//recordForQuery("");
-//		        }
 	        }
 	        
-	     // processing done here….
-	        Intent broadcastIntent = new Intent();
-	        broadcastIntent.setAction(ResponseReceiver.ACTION_RESP);
-	        broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
-	        sendBroadcast(broadcastIntent);
 	    }
 	    
 	    public static final String RESPOND_INTENT_QUERY = "com.example.quiltviewclient.respondquery";
 	    public static final String RESPOND_INTENT_QUERY_ID = "com.example.quiltviewclient.respondqueryID";
 	    public static final String RESPOND_INTENT_USER_ID = "com.example.quiltviewclient.responduserID";
 	    public static final String RESPOND_INTENT_QUERY_IMAGE = "com.example.quiltviewclient.queryImage";
+
 	    private void recordForQuery(String query, int queryID, int userID, String imagePath) {
         	Intent respondIntent = new Intent(this, RespondActivity.class);
         	respondIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -96,37 +100,6 @@ public class RequestPullingService extends IntentService {
         	respondIntent.putExtra(RESPOND_INTENT_USER_ID, userID);
         	respondIntent.putExtra(RESPOND_INTENT_QUERY_IMAGE, imagePath);
         	startActivity(respondIntent);
-
-//	    	NotificationCompat.Builder mBuilder =
-//	    	        new NotificationCompat.Builder(this)
-//	    	        .setSmallIcon(R.drawable.ic_launcher)
-//	    	        .setContentTitle("My notification")
-//	    	        .setContentText("Hello World!");
-//
-//	    	// The stack builder object will contain an artificial back stack for the
-//	    	// started Activity.
-//	    	// This ensures that navigating backward from the Activity leads out of
-//	    	// your application to the Home screen.
-//	    	TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-//	    	// Adds the back stack for the Intent (but not the Intent itself)
-//	    	stackBuilder.addParentStack(RespondActivity.class);
-//	    	// Adds the Intent that starts the Activity to the top of the stack
-//	    	stackBuilder.addNextIntent(respondIntent);
-//	    	PendingIntent resultPendingIntent =
-//	    	        stackBuilder.getPendingIntent(
-//	    	            0,
-//	    	            PendingIntent.FLAG_UPDATE_CURRENT
-//	    	        );
-//	    	mBuilder.setContentIntent(resultPendingIntent);
-//	    	Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.ringtone1);
-//	    	mBuilder.setSound(sound);
-//	    	
-//	    	NotificationManager mNotificationManager =
-//	    	    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//	    	// mId allows you to update the notification later on.
-//	    	int mId = 11; //TODO ??
-//	    	mNotificationManager.notify(mId, mBuilder.build());
-	    	
 	    }
 	    
     	// Acquire a reference to the system Location Manager
@@ -151,6 +124,18 @@ public class RequestPullingService extends IntentService {
     	
     	private void getLocation() {
     		mLocationUpdated = false;
+    		
+    		/* It is said that Google Glass has built-in GPS hardware. Unfortunately, 
+    		 * it is not activated at this time. So GPS is not available when Glass
+    		 * is not paired with a phone. During the evolution of Glass software, 
+    		 * sometimes it just gives you a null result for GPS location, sometimes
+    		 * it raises an exception. 
+    		 * 
+    		 * In this case, we get location from Network instead, which is not as 
+    		 * precise, but always works.
+    		 * Wenlu Hu, April 2014
+    		 */
+    		
 		    //String locationProvider = LocationManager.GPS_PROVIDER;
     		String locationProvider = LocationManager.NETWORK_PROVIDER;
 
@@ -162,8 +147,6 @@ public class RequestPullingService extends IntentService {
     			mLocation = null;
     		}
 
-	    	//if (mLocationUpdated)
-	    	
 		    if (mLocation == null)
 		    	mLocation = locationManager.getLastKnownLocation(locationProvider);
 	    }
@@ -211,7 +194,13 @@ public class RequestPullingService extends IntentService {
 		    	latitude = mLocation.getLatitude();
 		    	longitude = mLocation.getLongitude();
 		    } else {
-		    	//TODO test real location, delete fake one
+		    	//TODO test real location
+		    	/*
+		    	 * As we usually develop and demo indoor, the GPS location is not always 
+		    	 * available. For the convenience of development, we use theses fixed fake 
+		    	 * location. This is somewhere on Carnegie Mellon University campus
+		    	 * Wenlu Hu, April 2014
+		    	 */
 		    	Log.i(LOG_TAG, "Fake Location");
 		    	latitude = 40.443469; //40.44416720;
 		    	longitude = -79.943862; //-79.94336060;
@@ -241,7 +230,6 @@ public class RequestPullingService extends IntentService {
 		        	
 		        	try {
                         JSONObject obj= (JSONObject) JSONValue.parse(jsonString);
-                        //Log.i(LOG_TAG, obj.getClass().toString());
                         String query = obj.get("content").toString();
                         int queryID = Integer.parseInt(obj.get("query_id").toString());
                         int userID = Integer.parseInt(obj.get("user_id").toString());
