@@ -1,5 +1,7 @@
 package com.example.quiltviewclient;
 
+//zhuoc: this file is not needed for now
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
