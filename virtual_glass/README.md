@@ -10,7 +10,10 @@ We'd love to test the scalability of our system without actually using hundreds 
   It will ask for authentication only the first time. 
   Restart if it stopped after authentication.
 
+
 ## To Run
+- Run virtual environment first
+
 - python virtual\_glass.py 
 
   With each command, use -h for help 
