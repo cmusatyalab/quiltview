@@ -153,3 +153,5 @@ czxxdd@gmail.com 015ECD700501801B
 MAC address:
 zhuo's glass f8:8f:ca:24:5f:8b
 blue glass f8:8f:ca:24:8c:7d
+
+https://code.google.com/p/google-glass-api/issues/detail?id=360

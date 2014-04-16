@@ -35,6 +35,7 @@ import com.google.android.youtube.player.YouTubeIntents;
 
 
 public class RespondActivity extends Activity {
+    private static final String LOG_TAG = "RespondActivity";
 
 	/*
 	 * Configuration
@@ -207,7 +208,7 @@ public class RespondActivity extends Activity {
 		TextView textView = (TextView) findViewById(R.id.status_update);
 		textView.setText("Recording...");
 		
-		Log.i("takeVideoWithCameraAPI", "Starting to record");
+		Log.i(LOG_TAG, "Starting to stream");
         try {
             mCamera.setPreviewDisplay(mPreview.getHolder());
             Log.i("takeVideoWithCameraAPI", "Setted preview display");
@@ -218,13 +219,9 @@ public class RespondActivity extends Activity {
         mCamera.startPreview();
         Log.i("takeVideoWithCameraAPI", "Started preview");
         
-		
-        
         mPreview.setPreviewCallback(previewCallback);
         Log.i("takeVideoWithCameraAPI", "Added preview callback");
-        
-        
-        
+                
         if (streamingThread == null)
             streamingThread = new StreamingThread(1, "128.2.213.25", 7950);
         
