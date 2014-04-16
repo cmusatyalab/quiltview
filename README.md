@@ -134,24 +134,40 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
 ## Setting up client
 
-    To come soon...
+1. Install Android SDK 4.4.2, including Glass Development Kit Preview. 
+
+2. Import the project under `QUILTVIEW_ROOT/client`, and install it to the Glass. 
+
+3. The client application can be activated by "Ok, Glass" -> "Start QuiltView".
 
 ## Setting up proxy
 
-    To come soon...
+0. Go to the proxy directory
+
+    ```bash
+    cd QUILTVIEW_ROOT
+    source ENV/bin/activate
+    cd proxy_server
+    ```
+
+1. You have to register a project at Google Developer console to use the Google APIs of uploading video to Youtube. What you need is a JSON file with your credentials. Follow the instructions here:
+
+    ```bash
+    https://developers.google.com/youtube/registering_an_application
+    ```
+
+2. After creating the project, download the json file and put it under ```proxy_server``` directory. It has to be named as ```client_secrets.json```.
+
+3. Run proxy
+
+    ```bash
+    python proxy_server.py
+    ```
+
+    The first time you run it, an OAuth page will probably pop up. Click okay and you will not be bothered again.
 
 ## Setting up virtual user
 
     To come soon...
-
-Four initial users:
-wenlu.c.hu@gmail.com 015DA6FC1900A01F 
-zhuoc@cs.cmu.edu 0149C25E0601C019
-15821.group7@gmail.com 015DA77218019009
-czxxdd@gmail.com 015ECD700501801B
-
-MAC address:
-zhuo's glass f8:8f:ca:24:5f:8b
-blue glass f8:8f:ca:24:8c:7d
 
 https://code.google.com/p/google-glass-api/issues/detail?id=360
