@@ -10,6 +10,7 @@ We'd love to test the scalability of our system without actually using hundreds 
   It will ask for authentication only the first time. 
   Restart if it stopped after authentication.
 
+- An empty file VirtualUsers.csv in this directory 
 
 ## To Run
 - Run virtual environment first
