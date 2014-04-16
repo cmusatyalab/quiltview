@@ -120,7 +120,7 @@ def create():
     parser.add_argument('mapUrl',type=str, metavar='googleMapURL', 
         help='A link of Google map related to the interested area')
     parser.add_argument('--Prob', type=float, dest='respondProb', metavar='respondProb', 
-        help='The probability of responding to each query. default=100% ', 
+        help='The probability of responding to each query. default=1.0 ', 
         default=1.0)
     parser.add_argument('--VideoPath', type=str, dest='preVideo', metavar='VideoPrefix',
         help="""The prefix for fake video filenames. The names for the video files should 
