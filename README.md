@@ -130,6 +130,8 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     sudo ../../ENV/bin/python manage.py runserver 0.0.0.0:80
     ```
 
+8. Sign in...
+
 ## Setting up client
 
     To come soon...
@@ -151,3 +153,5 @@ czxxdd@gmail.com 015ECD700501801B
 MAC address:
 zhuo's glass f8:8f:ca:24:5f:8b
 blue glass f8:8f:ca:24:8c:7d
+
+https://code.google.com/p/google-glass-api/issues/detail?id=360

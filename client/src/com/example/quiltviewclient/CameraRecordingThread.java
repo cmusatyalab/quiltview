@@ -1,9 +1,11 @@
 /*
  * Original code from Zhuo Chen: package edu.cmu.cs.elijah.catchattention;
- * Modified for QuiltView byt Wenlu Hu
+ * Modified for QuiltView by Wenlu Hu
  */
 
 package com.example.quiltviewclient;
+
+//zhuoc: this file is not needed for now
 
 import java.io.File;
 import java.io.IOException;
@@ -64,12 +66,20 @@ public class CameraRecordingThread extends Thread {
     }
     
     //open camera, configure video recorder, start recording and write the data to fd
-    private boolean startVideoCapturing() throws IOException {  	
+    private boolean startVideoCapturing() throws IOException {
+        try {
+            camera.setPreviewDisplay(null);
+        } catch (java.io.IOException e) {
+            Log.d(LOG_TAG, "IOException nullifying preview display: " + e.getMessage());
+        }
+        camera.stopPreview();
+        camera.unlock();
+        
     	Log.i("VideoCapture", "Starting Video Capturing");
         videoRecorder = new MediaRecorder();
     	
         // TODO: understand this...
-        camera.unlock();
+//        camera.unlock();
     	
         videoRecorder.setCamera(camera);
         
