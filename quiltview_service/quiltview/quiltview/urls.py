@@ -21,6 +21,8 @@
 from django.conf.urls import patterns, include, url
 from quiltview_query.api import UserResource, QueryResource, VideoResource, PromptResource
 from tastypie.api import Api
+from django.conf import settings
+from django.conf.urls.static import static
 #from django.views.generic import TemplateView
 
 # Uncomment the next two lines to enable the admin:
