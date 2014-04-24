@@ -132,7 +132,13 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     sudo ../../ENV/bin/python manage.py runserver 0.0.0.0:80
     ```
 
-8. Sign in...
+8. Register the account you want to use to post a query. 
+
+    Got to ```http://<hostname>/admin```
+
+    You have to login with the superuser name and password for your Django project. You probably have done this when you first did ```syncdb```. If you haven't, you can create one through ```./manage.py createsuperuser --username=<username> --email=<email>```
+
+    Go to Users, then Add. The most important field is the Google Account, which you will use to login QuiltView and post queries.
 
 ## Setting up client
 
@@ -151,7 +157,14 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     source ENV/bin/activate
     cd proxy_server
     ```
-1. Set the configuration parameters in Const.py
+
+1. Install system libraries
+
+    ```bash
+    sudo apt-get install libopencv-dev python-opencv
+    ```
+
+1. Set the configuration parameters in Const.py. If your QuiltView server and proxy are on the same machine, set ```QUILTVIEW\_URL``` to ```http://127.0.0.1```.
 
 2. If you want to use Youtube to store videos, you have to do the following steps. If your proxy and quiltview server are the same and you want to store the videos in this server (for demo purpose), then you don't need to do this.
 
