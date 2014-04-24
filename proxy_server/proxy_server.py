@@ -108,7 +108,8 @@ def serverNewClient(queue, options):
         print "Connection terminated by the other side"
 
         # write to file
-        videoWriter = cv.CreateVideoWriter(Const.TMP_VIDEO_NAME + "%d_%d.avi" % (query_ID, port), cv.CV_FOURCC('X', 'V', 'I', 'D'), 15, (320, 240), True)
+        video_file_name = Const.TMP_VIDEO_NAME + "%d_%d.avi" % (query_ID, port)
+        videoWriter = cv.CreateVideoWriter(video_file_name, cv.CV_FOURCC('X', 'V', 'I', 'D'), 15, (320, 240), True)
         if not videoWriter:
             print "Error in creating video writer"
             sys.exit(1)
@@ -122,14 +123,15 @@ def serverNewClient(queue, options):
         # STEP 2: upload to Youtube, get url back
         if Const.ID_UPLOAD_YOUTUBE:
             options.title = "QuiltView: %s" % query_content
-            options.file = Const.TMP_VIDEO_NAME + "%d.avi" % port
+            options.file = video_file_name 
             video_watch_id = upload_youtube.initialize_upload(options)   # this function handles all uploading...
 
         # STEP 3: register new video at QuiltView
         if Const.ID_UPLOAD_YOUTUBE:
             video_url = "http://www.youtube.com/watch?v=%s" % video_watch_id
         else:
-            video_url = Const.QUILTVIEW_URL + "/media/" #TODO: add right url here 
+            video_url = Const.QUILTVIEW_URL + "/media/" + video_file_name
+
         new_video_entry = {"url" : video_url, 
                            "owner" : "/api/dm/user/%d/" % user_ID, 
                            "query" : "/api/dm/query/%d/" % query_ID, 
@@ -139,7 +141,7 @@ def serverNewClient(queue, options):
         post_video.post(Const.QUILTVIEW_URL, Const.VIDEO_RESOURCE, new_video_entry)
 
         # cleaning
-        #os.remove(Const.TMP_VIDEO_NAME + "%d_%d.avi" % (query_ID, port))
+        #os.remove(video_file_name)
 
         break
 
