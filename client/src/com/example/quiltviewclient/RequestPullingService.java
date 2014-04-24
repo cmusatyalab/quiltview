@@ -23,7 +23,6 @@ package com.example.quiltviewclient;
 * https://developer.android.com/training/run-background-service/create-service.html
 */ 
 
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -210,7 +209,7 @@ public class RequestPullingService extends IntentService {
 		    
 		    HttpURLConnection urlConnection = null;
 		    try {
-			    URL url = new URL("http://quiltview.opencloudlet.org/latest/"
+			    URL url = new URL(Const.quiltview_server_addr + "/latest/"
 			    		+ "?user_id=" + mSerialNumber 
 			    		+ "&lat=" + latitude + "&lng=" + longitude);
 			    urlConnection = (HttpURLConnection) url.openConnection();

@@ -115,7 +115,7 @@ public class StreamingThread extends Thread {
             case 1:
             	if ((socket != null) && (!socket.isClosed()))
             		socket.close();
-            	socket = new Socket("typhoon.elijah.cs.cmu.edu", 7950);
+            	socket = new Socket(Const.proxy_addr, 7950);
         		if (socket.isConnected())
         			Log.i("sendVideo", "Socket Connected");
         		else
