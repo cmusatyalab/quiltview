@@ -21,7 +21,11 @@
 import os
 
 # The url of the server you want to contact
-QUILTVIEW_URL = "http://quiltview.opencloudlet.org"
+QUILTVIEW_URL_LOCAL = "http://127.0.0.1"
+
+# The url of the server you can access from outside the local network
+QUILTVIEW_URL = "http://128.2.213.116"
+
 
 # The resource url on the quiltview server to post new video
 # You probably don't need to change this
@@ -35,3 +39,7 @@ IS_UPLOAD_YOUTUBE = False
 
 # The path to media files (locally stored videos)
 MEDIA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, "quiltview_service", "quiltview", "MEDIA")
+
+# The range of ports that can be used
+PORT_MIN = 3000
+PORT_MAX = 20000
