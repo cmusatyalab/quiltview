@@ -133,7 +133,7 @@ public class StreamingThread extends Thread {
 					Log.e("sendVideo", "Failed to get stream port: " + e.toString());
 				}
         		socket.close();
-        		socket = new Socket("typhoon.elijah.cs.cmu.edu", remotePort);
+        		socket = new Socket(Const.proxy_addr, remotePort);
         		if (socket.isConnected())
         			Log.i("sendVideo", "Streaming socket Connected");
         		else
