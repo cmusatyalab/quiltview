@@ -66,6 +66,10 @@ def serverNewClient(queue, options):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(("", 0))
     port = s.getsockname()[1]
+
+    port = port % (Const.PORT_MAX - Const.PORT_MIN) + Const.PORT_MIN
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("", port))
     queue.put(port)
     s.listen(0)
     while True:
@@ -139,7 +143,7 @@ def serverNewClient(queue, options):
                            "upload_location_lat" : "11.111111", 
                            "upload_location_lng" : "22.2222"
                           }  # some fields are random for now
-        post_video.post(Const.QUILTVIEW_URL, Const.VIDEO_RESOURCE, new_video_entry)
+        post_video.post(Const.QUILTVIEW_URL_LOCAL, Const.VIDEO_RESOURCE, new_video_entry)
 
         # move to media dir
         shutil.move(video_file_name, Const.MEDIA_PATH)
@@ -148,6 +152,8 @@ def serverNewClient(queue, options):
 
 def startServer(host, port, options):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     s.bind((host, port))
     s.listen(0)
 
