@@ -29,7 +29,7 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
 ## Setting Up Server
 
-0. Go to the server directory
+0. Go to the QuiltView root directory
 
     ```bash
     cd QUILTVIEW_ROOT
@@ -90,10 +90,10 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
 5. Configure Django
 
-    Create folders for static files
+    Create folders for static files and media files
 
     ```bash
-    mkdir STATIC_DIRS STATIC_ROOT
+    mkdir STATIC_DIRS STATIC_ROOT MEDIA
     ```
 
     Download boostrap, unzip it, and put it under STATIC_DIRS. 
@@ -149,14 +149,17 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     source ENV/bin/activate
     cd proxy_server
     ```
+1. Set the configuration parameters in Const.py
 
-1. You have to register a project at Google Developer console to use the Google APIs of uploading video to Youtube. What you need is a JSON file with your credentials. Follow the instructions here:
+2. If you want to use Youtube to store videos, you have to do the following steps. If your proxy and quiltview server are the same and you want to store the videos in this server (for demo purpose), then you don't need to do this.
+
+    Register a project at Google Developer console to use the Google APIs of uploading video to Youtube. What you need is a JSON file with your credentials. Follow the instructions here:
 
     ```bash
     https://developers.google.com/youtube/registering_an_application
     ```
 
-2. After creating the project, download the json file and put it under ```proxy_server``` directory. It has to be named as ```client_secrets.json```.
+    After creating the project, download the json file and put it under ```proxy_server``` directory. It has to be named as ```client_secrets.json```.
 
 3. Run proxy
 
@@ -164,10 +167,10 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     python proxy_server.py
     ```
 
-    The first time you run it, an OAuth page will probably pop up. Click okay and you will not be bothered again.
+    If you are uploading to Youtube, an OAuth page will probably pop up the first time you run it. Click okay and you will not be bothered again.
 
 ## Setting up virtual user
 
-    To come soon...
+    See the Readme file inside ```virtual_glass``` directory.
 
 https://code.google.com/p/google-glass-api/issues/detail?id=360
