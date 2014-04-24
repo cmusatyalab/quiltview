@@ -22,6 +22,9 @@ package com.example.quiltviewclient;
 
 //zhuoc: this file is not needed for now
 
+// https://code.google.com/p/google-glass-api/issues/detail?id=360
+
+
 import java.io.File;
 import java.io.IOException;
 

@@ -191,5 +191,3 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 ## Setting up virtual user
 
     See the Readme file inside ```virtual_glass``` directory.
-
-https://code.google.com/p/google-glass-api/issues/detail?id=360
