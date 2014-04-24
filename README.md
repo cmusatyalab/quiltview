@@ -168,7 +168,7 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     sudo apt-get install libopencv-dev python-opencv
     ```
 
-1. Set the configuration parameters in Const.py. If your QuiltView server and proxy are on the same machine, set ```QUILTVIEW\_URL``` to ```http://127.0.0.1```.
+1. Set the configuration parameters in Const.py.
 
 2. If you want to use Youtube to store videos, you have to do the following steps. If your proxy and quiltview server are the same and you want to store the videos in this server (for demo purpose), then you don't need to do this.
 
