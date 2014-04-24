@@ -123,8 +123,12 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
 6. Get models for text similarity detection
 
-    wiki_en_wordids.txt
-    model.lda
+    ```bash
+    cd quiltview_query/text_similarity/
+    wget https://storage.cmusatyalab.org/text_similarity_model/wiki_en_wordids.txt
+    wget https://storage.cmusatyalab.org/text_similarity_model/model.lda
+    cd -
+    ```
 
 7. Run server
 
@@ -134,7 +138,7 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
 8. Register the account you want to use to post a query. 
 
-    Got to ```http://<hostname>/admin```
+    Go to ```http://<hostname>/admin```
 
     You have to login with the superuser name and password for your Django project. You probably have done this when you first did ```syncdb```. If you haven't, you can create one through ```./manage.py createsuperuser --username=<username> --email=<email>```
 
