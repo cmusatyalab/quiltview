@@ -119,6 +119,8 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     ./manage.py collectstatic
     ```
 
+    Edit parameters in ```quiltview/settings.py``` to set your server address correctly, including ```SITE_URL```, ```LOGIN_REDIRECT_URL```, ```LOGOUT_REDIRECT_URL```
+
 6. Get models for text similarity detection
 
     wiki_en_wordids.txt
@@ -136,7 +138,7 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
 1. Install Android SDK 4.4.2, including Glass Development Kit Preview. 
 
-2. Import the project under `QUILTVIEW_ROOT/client`, and install it to the Glass. 
+2. Import the project under `QUILTVIEW_ROOT/client`, change the quiltview server and proxy address in Const.java. Install it to the Glass. 
 
 3. The client application can be activated by "Ok, Glass" -> "Start QuiltView".
 
