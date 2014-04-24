@@ -190,4 +190,4 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
 ## Setting up virtual user
 
-    See the Readme file inside ```virtual_glass``` directory.
+See the Readme file inside ```virtual_glass``` directory.
