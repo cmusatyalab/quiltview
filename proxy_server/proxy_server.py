@@ -1,4 +1,22 @@
-# TODO: description
+#!/usr/bin/env python 
+#
+# QuiltView: a Crowd-Sourced Video Response System
+#
+#   Author: Zhuo Chen <zhuoc@cs.cmu.edu>
+#
+#   Copyright (C) 2011-2013 Carnegie Mellon University
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 
 from multiprocessing import Process, Manager
 import socket
@@ -11,12 +29,7 @@ from cStringIO import StringIO
 
 import upload_youtube 
 import post_video
-
-TMP_VIDEO_NAME = "uploaded_video"
-
-#QUILTVIEW_URL = "http://23.21.103.195:8000"
-QUILTVIEW_URL = "http://quiltview.opencloudlet.org"
-VIDEO_RESOURCE = "/api/dm/video/"
+import Const
 
 def processFrame(data):
 
@@ -74,7 +87,7 @@ def serverNewClient(queue, options):
             query_content = conn.recv(content_len)
         print "Query content = %s" % query_content
 
-        #video_file = open(TMP_VIDEO_NAME, 'w')
+        #video_file = open(Const.TMP_VIDEO_NAME, 'w')
         frames = []
         #conn.settimeout(3)
         data = _receive_all(conn, 4)
@@ -95,7 +108,7 @@ def serverNewClient(queue, options):
         print "Connection terminated by the other side"
 
         # write to file
-        videoWriter = cv.CreateVideoWriter(TMP_VIDEO_NAME + "%d.avi" % port, cv.CV_FOURCC('X', 'V', 'I', 'D'), 15, (320, 240), True)
+        videoWriter = cv.CreateVideoWriter(Const.TMP_VIDEO_NAME + "%d_%d.avi" % (query_ID, port), cv.CV_FOURCC('X', 'V', 'I', 'D'), 15, (320, 240), True)
         if not videoWriter:
             print "Error in creating video writer"
             sys.exit(1)
@@ -107,21 +120,26 @@ def serverNewClient(queue, options):
         #video_file.close()
 
         # STEP 2: upload to Youtube, get url back
-        options.title = "QuiltView: %s" % query_content
-        options.file = TMP_VIDEO_NAME + "%d.avi" % port
-        video_watch_id = upload_youtube.initialize_upload(options)   # this function handles all uploading...
+        if Const.ID_UPLOAD_YOUTUBE:
+            options.title = "QuiltView: %s" % query_content
+            options.file = Const.TMP_VIDEO_NAME + "%d.avi" % port
+            video_watch_id = upload_youtube.initialize_upload(options)   # this function handles all uploading...
 
         # STEP 3: register new video at QuiltView
-        new_video_entry = {"url" : "http://www.youtube.com/watch?v=%s" % video_watch_id, 
+        if Const.ID_UPLOAD_YOUTUBE:
+            video_url = "http://www.youtube.com/watch?v=%s" % video_watch_id
+        else:
+            video_url = Const.QUILTVIEW_URL + "/media/" #TODO: add right url here 
+        new_video_entry = {"url" : video_url, 
                            "owner" : "/api/dm/user/%d/" % user_ID, 
                            "query" : "/api/dm/query/%d/" % query_ID, 
                            "upload_location_lat" : "11.111111", 
                            "upload_location_lng" : "22.2222"
                           }  # some fields are random for now
-        post_video.post(QUILTVIEW_URL, VIDEO_RESOURCE, new_video_entry)
+        post_video.post(Const.QUILTVIEW_URL, Const.VIDEO_RESOURCE, new_video_entry)
 
         # cleaning
-        #os.remove(TMP_VIDEO_NAME + "%d.avi" % port)
+        #os.remove(Const.TMP_VIDEO_NAME + "%d_%d.avi" % (query_ID, port))
 
         break
 
@@ -151,7 +169,7 @@ def startServer(host, port, options):
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("--file", dest="file", help="Video file to upload",
-      default=TMP_VIDEO_NAME)
+      default=Const.TMP_VIDEO_NAME)
     parser.add_option("--title", dest="title", help="Video title",
       default="QuiltView response")
     parser.add_option("--description", dest="description", help="Video description",
