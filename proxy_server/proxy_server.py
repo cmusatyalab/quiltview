@@ -122,13 +122,13 @@ def serverNewClient(queue, options):
         #video_file.close()
 
         # STEP 2: upload to Youtube, get url back
-        if Const.ID_UPLOAD_YOUTUBE:
+        if Const.IS_UPLOAD_YOUTUBE:
             options.title = "QuiltView: %s" % query_content
             options.file = video_file_name 
             video_watch_id = upload_youtube.initialize_upload(options)   # this function handles all uploading...
 
         # STEP 3: register new video at QuiltView
-        if Const.ID_UPLOAD_YOUTUBE:
+        if Const.IS_UPLOAD_YOUTUBE:
             video_url = "http://www.youtube.com/watch?v=%s" % video_watch_id
         else:
             video_url = Const.QUILTVIEW_URL + "/media/" + video_file_name
