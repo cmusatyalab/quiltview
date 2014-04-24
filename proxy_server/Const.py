@@ -18,6 +18,8 @@
 #   limitations under the License.
 #
 
+import os
+
 # The url of the server you want to contact
 QUILTVIEW_URL = "http://quiltview.opencloudlet.org"
 
@@ -30,3 +32,6 @@ TMP_VIDEO_NAME = "uploaded_video"
 
 # Wheter upload to youtube or just store locally
 IS_UPLOAD_YOUTUBE = False
+
+# The path to media files (locally stored videos)
+MEDIA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, "quiltview_service", "quiltview", "MEDIA")

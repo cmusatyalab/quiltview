@@ -26,6 +26,7 @@ import time
 from optparse import OptionParser
 import Image, cv, cv2
 from cStringIO import StringIO
+import shutil
 
 import upload_youtube 
 import post_video
@@ -140,8 +141,8 @@ def serverNewClient(queue, options):
                           }  # some fields are random for now
         post_video.post(Const.QUILTVIEW_URL, Const.VIDEO_RESOURCE, new_video_entry)
 
-        # cleaning
-        #os.remove(video_file_name)
+        # move to media dir
+        shutil.move(video_file_name, Const.MEDIA_PATH)
 
         break
 
