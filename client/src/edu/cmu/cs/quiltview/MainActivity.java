@@ -1,5 +1,5 @@
 
-package com.example.quiltviewclient;
+package edu.cmu.cs.quiltview;
 
 /**
 * Quiltview - CMU 2013
