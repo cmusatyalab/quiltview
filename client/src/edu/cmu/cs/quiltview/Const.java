@@ -2,7 +2,7 @@ package edu.cmu.cs.quiltview;
 
 /**
 * Quiltview - CMU 2013
-* Author: Zhuo Chen <wenlu@cmu.edu>
+* Author: Zhuo Chen <zhuoc@cs.cmu.edu>
 * 
 * Copyright (C) 2011-2013 Carnegie Mellon University
 * Licensed under the Apache License, Version 2.0 (the "License");
