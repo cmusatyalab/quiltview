@@ -168,9 +168,9 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
     sudo apt-get install libopencv-dev python-opencv
     ```
 
-1. Set the configuration parameters in Const.py.
+2. Set the configuration parameters in Const.py.
 
-2. If you want to use Youtube to store videos, you have to do the following steps. If your proxy and quiltview server are the same and you want to store the videos in this server (for demo purpose), then you don't need to do this.
+3. If you want to use Youtube to store videos, you have to do the following steps. If your proxy and quiltview server are the same and you want to store the videos in this server (for demo purpose), then you don't need to do this.
 
     Register a project at Google Developer console to use the Google APIs of uploading video to Youtube. What you need is a JSON file with your credentials. Follow the instructions here:
 
@@ -180,7 +180,7 @@ Currently we have only tested the source code with Ubuntu 12.04 LTS 64-bit.
 
     After creating the project, download the json file and put it under ```proxy_server``` directory. It has to be named as ```client_secrets.json```.
 
-3. Run proxy
+4. Run proxy
 
     ```bash
     python proxy_server.py
